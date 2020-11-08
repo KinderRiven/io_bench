@@ -58,6 +58,7 @@ int main(int argc, char** argv)
     sprintf(_fname, "%s/io_bench", _dpath);
     printf("CREATE NEW FILE (%s)\n", _fname);
     int _fd = open(_fname, O_RDWR | O_DIRECT | O_CREAT, 0666);
+    fallocate(_fd, 0, 0, _size);
     assert(_fd > 0);
 
     int _cnt = 0;
