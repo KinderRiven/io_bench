@@ -12,7 +12,7 @@
 int main(int argc, char** argv)
 {
     char _dname[128];
-    size_t _size;
+    size_t _size = 16UL * 1024 * 1024 * 1024;
     char* _base_address;
 
     int _fd = open(_dname, O_RDWR | O_DIRECT, 0666);
