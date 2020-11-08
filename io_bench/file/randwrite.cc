@@ -60,7 +60,7 @@ static void io_handle(worker_t* worker)
     posix_memalign(&_buff, _bs, _bs);
     memset(_buff, 0xff, _bs);
 
-    printf("[%d][0, %llu][BLOCK_SIZE:%zu][COUNT:%llu]\n", _id, _maxv, _bs, worker->sec);
+    printf("[%d][RANGE:(0,%llu)][BLOCK_SIZE:%zu][COUNT:%llu]\n", _id, _maxv, _bs, worker->sec);
     _t1.Start();
     for (;;) {
         uint32_t __s = _random->Next() % _maxv;
