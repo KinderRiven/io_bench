@@ -1,13 +1,10 @@
-all: clean seqwrite randwrite randread
+all: clean seqwrite rw
 
 seqwrite:
 	g++ -O0 seqwrite.cc -o seqwrite -lpthread
 
-randwrite:
-	g++ -O0 randwrite.cc -o randwrite -lpthread
-
-randread:
-	g++ -O0 randread.cc -o randread -lpthread
+rw:
+	g++ -O0 readwrite.cc -o readwrite -lpthread
 
 clean:
-	rm -rf seqwrite randwrite
+	rm -rf seqwrite readwrite
