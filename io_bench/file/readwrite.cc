@@ -143,7 +143,7 @@ int main(int argc, char** argv)
         _threads[_wcnt] = std::thread(io_handle, &_workers[_wcnt]);
         _wcnt++;
     }
-    for (int i = 0; i < _num_rthread; i++) {
+    for (int i = 0; i < _num_wthread; i++) {
         _workers[_wcnt].id = _wcnt;
         _workers[_wcnt].fd = _fd;
         _workers[_wcnt].type = DO_WRITE;
