@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 
     time_t _t = time(NULL);
     struct tm* _lt = localtime(&_t);
-    sprintf(g_result_save_path, "[rw][%d%d][%04d%02d%02d][%02d%02d%02d]", _rbs, _wbs, _lt->tm_year, _lt->tm_mon, _lt->tm_mday, _lt->tm_hour, _lt->tm_min, _lt->tm_sec);
+    sprintf(g_result_save_path, "rw_%d_%d_%04d%02d%02d_%02d%02d%02d", _rbs, _wbs, _lt->tm_year, _lt->tm_mon, _lt->tm_mday, _lt->tm_hour, _lt->tm_min, _lt->tm_sec);
     mkdir(g_result_save_path, 0666);
 
     // create file
