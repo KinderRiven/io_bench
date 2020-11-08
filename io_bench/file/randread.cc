@@ -66,7 +66,7 @@ static void io_handle(worker_t* worker)
         uint32_t __s = _random->Next() % _maxv;
         uint64_t __offset = __s * _bs;
         _t2.Start();
-        pwrite(_fd, _buff, _bs, __offset);
+        pread(_fd, _buff, _bs, __offset);
         _t2.Stop();
         _sum_lat += _t2.Get();
         _vec_latency.push_back(_t2.Get());
@@ -91,7 +91,7 @@ static void io_handle(worker_t* worker)
 int main(int argc, char** argv)
 {
     if (argc < 5) {
-        printf("./randwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [time(seconds)]\n");
+        printf("./randread [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [time(seconds)]\n");
         return 1;
     }
 
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 
     time_t _t = time(NULL);
     struct tm* _lt = localtime(&_t);
-    sprintf(g_result_save_path, "randwrite%dB_%04d%02d%02d_%02d%02d%02d", _bs, _lt->tm_year, _lt->tm_mon, _lt->tm_mday, _lt->tm_hour, _lt->tm_min, _lt->tm_sec);
+    sprintf(g_result_save_path, "randread%dB_%04d%02d%02d_%02d%02d%02d", _bs, _lt->tm_year, _lt->tm_mon, _lt->tm_mday, _lt->tm_hour, _lt->tm_min, _lt->tm_sec);
     mkdir(g_result_save_path, 0666);
 
     // create file
