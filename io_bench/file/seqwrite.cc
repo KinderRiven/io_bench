@@ -74,7 +74,7 @@ static void io_handle(worker_t* worker)
     char _save_path[128];
     sprintf(_save_path, "%s/%d.lat", g_result_save_path, _id);
 
-    printf("[%d][TIME:%.2f][BW:%.2fGB/s]\n", _id, _sec, _bw);
+    printf("[%d][COUNT:%zu][TIME:%.2f][BW:%.2fGB/s]\n", _id, _vec_latency.size(), _sec, _bw);
     result_output(_save_path, _vec_latency);
 }
 
