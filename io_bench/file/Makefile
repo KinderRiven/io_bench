@@ -1,7 +1,10 @@
-all: seqwrite randwrite
+all: clean seqwrite randwrite
 
 seqwrite:
 	g++ -O0 seqwrite.cc -o seqwrite -lpthread
 
 randwrite:
 	g++ -O0 randwrite.cc -o randwrite -lpthread
+
+clean:
+	rm -rf seqwrite randwrite
