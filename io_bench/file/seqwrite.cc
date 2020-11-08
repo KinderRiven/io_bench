@@ -20,7 +20,7 @@ public:
     uint64_t cnt;
 };
 
-static const int kBlockSize = 16 * 1024;
+static const int kBlockSize = 1024 * 1024;
 
 static void io_handle(worker_t* worker)
 {
