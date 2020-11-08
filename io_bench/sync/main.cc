@@ -11,7 +11,7 @@
 
 int main(int argc, char** argv)
 {
-    char _dname[128];
+    char _dname[128] = "/dev/nvme2n1";
     size_t _size = 16UL * 1024 * 1024 * 1024;
     char* _base_address;
 
