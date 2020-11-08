@@ -35,11 +35,9 @@ static void io_handle(worker_t* worker)
     memset(_buff, 0xff, kBlockSize);
 
     printf("[%d][bs:%d][size:%zuGB]\n", _id, kBlockSize, (size_t)_cnt * kBlockSize / (1024 * 1024 * 1024));
-
     for (uint64_t i = 0; i < _cnt; i++) {
-        char* __p = _base + (_current + _cnt) * kBlockSize;
+        char* __p = _base + (_current + i) * kBlockSize;
         memcpy(_buff, __p, kBlockSize);
-        _cnt++;
     }
 }
 
@@ -71,7 +69,6 @@ int main(int argc, char** argv)
         _min += _per_worker_io_cnt;
         _threads[i] = std::thread(io_handle, &_workers[i]);
     }
-
     for (int i = 0; i < _num_thread; i++) {
         _threads[i].join();
     }
