@@ -25,7 +25,7 @@ public:
     int id;
     int fd;
     size_t bs;
-    uint64_t cnt;
+    uint64_t sec;
     uint64_t maxv;
     Random* random;
 };
@@ -47,9 +47,9 @@ static void io_handle(worker_t* worker)
 {
     int _id = worker->id;
     int _fd = worker->fd;
-    uint64_t _cnt = worker->cnt;
     uint64_t _maxv = worker->maxv;
     size_t _bs = worker->bs;
+    uint64_t _time = worker->sec * 1000000000UL;
     Random* _random = worker->random;
 
     Timer _t1;
@@ -60,9 +60,9 @@ static void io_handle(worker_t* worker)
     posix_memalign(&_buff, _bs, _bs);
     memset(_buff, 0xff, _bs);
 
-    printf("[%d][0, %llu][BLOCK_SIZE:%zu][COUNT:%llu]\n", _id, _maxv, _bs, _cnt);
+    printf("[%d][0, %llu][BLOCK_SIZE:%zu][COUNT:%llu]\n", _id, _maxv, _bs, worker->sec);
     _t1.Start();
-    for (uint64_t i = 0; i < _cnt; i++) {
+    for (;;) {
         uint32_t __s = _random->Next() % _maxv;
         uint64_t __offset = __s * _bs;
         _t2.Start();
@@ -70,6 +70,10 @@ static void io_handle(worker_t* worker)
         _t2.Stop();
         _sum_lat += _t2.Get();
         _vec_latency.push_back(_t2.Get());
+        _t1.Stop();
+        if (_t1.Get() > _time) {
+            break;
+        }
     }
     _t1.Stop();
 
@@ -83,11 +87,11 @@ static void io_handle(worker_t* worker)
     _vec_latency.clear();
 }
 
-// ./randwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [count(GB)]
+// ./randwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [time(seconds)]
 int main(int argc, char** argv)
 {
     if (argc < 5) {
-        printf("./randwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [count(GB)]\n");
+        printf("./randwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [time(seconds)]\n");
         return 1;
     }
 
@@ -95,7 +99,7 @@ int main(int argc, char** argv)
     size_t _size = atol(argv[2]) * (1024 * 1024 * 1024);
     int _num_thread = atol(argv[3]); // num read thread
     int _bs = atol(argv[4]);
-    uint64_t _cnt = (uint64_t)atol(argv[5]) * (1024 * 1024 * 1024) / _bs;
+    uint64_t _sec = atol(argv[5]);
 
     time_t _t = time(NULL);
     struct tm* _lt = localtime(&_t);
@@ -118,7 +122,7 @@ int main(int argc, char** argv)
         _workers[i].fd = _fd;
         _workers[i].maxv = _io_cnt;
         _workers[i].bs = _bs;
-        _workers[i].cnt = _cnt / _num_thread;
+        _workers[i].sec = _sec;
         _workers[i].random = new Random(1000 + i);
         _threads[i] = std::thread(io_handle, &_workers[i]);
     }
