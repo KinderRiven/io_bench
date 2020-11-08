@@ -68,14 +68,13 @@ static void io_handle(worker_t* worker)
     }
     _t1.Stop();
 
-    _vec_latency.clear();
     double _sec = _t1.GetSeconds();
     double _bw = (1.0 * _cnt * kBlockSize / (1024 * 1024 * 1024)) / _sec;
     char _save_path[128];
     sprintf(_save_path, "%s/%d.lat", g_result_save_path, _id);
-
     printf("[%d][COUNT:%zu][TIME:%.2f][BW:%.2fGB/s]\n", _id, _vec_latency.size(), _sec, _bw);
     result_output(_save_path, _vec_latency);
+    _vec_latency.clear();
 }
 
 // ./seqwrite [run_count] [device_mount_path] [device_capcity] [num_thread]
