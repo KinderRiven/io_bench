@@ -35,10 +35,10 @@ static void io_handle(worker_t* worker)
     memset(_buff, 0xff, kBlockSize);
 
     printf("[%d][bs:%d][size:%zuGB]\n", _id, kBlockSize, (size_t)_cnt * kBlockSize / (1024 * 1024 * 1024));
-    
+
     for (uint64_t i = 0; i < _cnt; i++) {
         char* __p = _base + (_current + _cnt) * kBlockSize;
-        memcpy(__p, _buff, kBlockSize);
+        memcpy(_buff, __p, kBlockSize);
         _cnt++;
     }
 }
@@ -75,5 +75,9 @@ int main(int argc, char** argv)
     for (int i = 0; i < _num_thread; i++) {
         _threads[i].join();
     }
+
+    munmap(_mmap_address, _size);
+    close(_fd);
+    printf("finished!\n");
     return 0;
 }
