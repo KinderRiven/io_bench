@@ -132,6 +132,7 @@ int main(int argc, char** argv)
     int _wcnt = 0;
     std::thread _threads[32];
 
+    printf("[read:%d|%dB][write:%d|%dB]\n", _num_rthread, _rbs, _num_wthread, _wbs);
     for (int i = 0; i < _num_rthread; i++) {
         _workers[_wcnt].id = _wcnt;
         _workers[_wcnt].fd = _fd;
