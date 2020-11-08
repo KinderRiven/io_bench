@@ -1,0 +1,18 @@
+[global]
+name=/dev/nvme2n1
+direct=1
+ioengine=libaio 
+
+# log_avg_msec=5000
+# write_bw_log=mlog
+# write_iops_log=mlog
+# write_lat_log=mlog
+
+# runtime=60
+# time_based
+
+[write_job]
+rw=write
+size=64GB
+numjobs=32
+bs=256KB
