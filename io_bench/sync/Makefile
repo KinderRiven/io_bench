@@ -1,2 +1,2 @@
 all:
-	g++ main.cc -o test -lpthread
+	g++ full_write.cc -o test -lpthread
