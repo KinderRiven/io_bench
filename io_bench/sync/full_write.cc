@@ -37,7 +37,7 @@ static void io_handle(worker_t* worker)
     printf("[%d][bs:%d][size:%zuGB]\n", _id, kBlockSize, (size_t)_cnt * kBlockSize / (1024 * 1024 * 1024));
     for (uint64_t i = 0; i < _cnt; i++) {
         char* __p = _base + (_current + i) * kBlockSize;
-        memcpy(__p, _buff, kBlockSize);
+        memcpy(__p, _buff, kBlockSize); // do write
     }
 }
 
