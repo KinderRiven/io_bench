@@ -77,11 +77,11 @@ static void io_handle(worker_t* worker)
     _vec_latency.clear();
 }
 
-// ./seqwrite [run_count] [device_mount_path] [device_capcity] [num_thread]
+// ./seqwrite [device_mount_path] [device_capcity] [num_thread]
 int main(int argc, char** argv)
 {
     if (argc < 4) {
-        printf("./seqwrite [run_count] [device_mount_path] [device_capcity] [num_thread]\n");
+        printf("./seqwrite [device_mount_path] [device_capcity] [num_thread]\n");
         return 1;
     }
 
@@ -90,10 +90,9 @@ int main(int argc, char** argv)
     sprintf(g_result_save_path, "seqwrite_%04d%02d%02d_%02d%02d%02d", _lt->tm_year, _lt->tm_mon, _lt->tm_mday, _lt->tm_hour, _lt->tm_min, _lt->tm_sec);
     mkdir(g_result_save_path, 0777);
 
-    int _times = atol(argv[1]);
-    char* _dpath = argv[2];
-    size_t _size = atol(argv[3]) * (1024 * 1024 * 1024);
-    int _num_thread = atol(argv[4]); // num read thread
+    char* _dpath = argv[1];
+    size_t _size = atol(argv[2]) * (1024 * 1024 * 1024);
+    int _num_thread = atol(argv[3]); // num read thread
 
     // create file
     char _fname[128];

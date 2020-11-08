@@ -82,11 +82,11 @@ static void io_handle(worker_t* worker)
     _vec_latency.clear();
 }
 
-// ./seqwrite [count(GB)] [device_mount_path] [device_capcity] [num_thread]
+// ./randwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [count(GB)]
 int main(int argc, char** argv)
 {
-    if (argc < 4) {
-        printf("./seqwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [count(GB)]\n");
+    if (argc < 5) {
+        printf("./randwrite [device_mount_path] [device_capcity] [num_thread] [block_size(B)] [count(GB)]\n");
         return 1;
     }
 
