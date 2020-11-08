@@ -1,3 +1,7 @@
+./seqwrite /home/hanshukai/dir1 1740 1
+./seqwrite /home/hanshukai/dir1 1740 1
+./seqwrite /home/hanshukai/dir1 1740 1
+
 # ./readwrite [device_mount_path] [device_capcity|GB] [n_rthread] [r_bs|B] [n_wthread] [w_bs|B] [time|sec]
 run_time=1200
 ./readwrite /home/hanshukai/dir1 1740 0 4096 1 4096 $((run_time))
