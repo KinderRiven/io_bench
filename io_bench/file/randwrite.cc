@@ -105,8 +105,7 @@ int main(int argc, char** argv)
     char _fname[128];
     sprintf(_fname, "%s/io_bench", _dpath);
     printf("CREATE NEW FILE (%s)\n", _fname);
-    int _fd = open(_fname, O_RDWR | O_DIRECT | O_CREAT, 0666);
-    fallocate(_fd, 0, 0, _size);
+    int _fd = open(_fname, O_RDWR | O_DIRECT, 0666);
     assert(_fd > 0);
 
     worker_t _workers[32];
