@@ -1,5 +1,5 @@
 [global]
-name=/dev/nvme2n1
+filename=/dev/nvme2n1
 direct=1
 ioengine=libaio 
 
