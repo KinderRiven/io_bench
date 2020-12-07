@@ -37,7 +37,6 @@ static std::thread g_threads[64];
 static void run_io_thread_based_size(io_thread_t* io_thread)
 {
     int _fd = io_thread->fd;
-    uint64_t _pos = io_thread->io_base;
     size_t _io_total_size = io_thread->io_total_size;
     size_t _io_block_size = io_thread->io_block_size;
     uint64_t _do_count = _io_total_size / _io_block_size;
@@ -45,6 +44,7 @@ static void run_io_thread_based_size(io_thread_t* io_thread)
     // 为了测试效果最好，需要进行4KB的对齐
     uint64_t _io_start = ((io_thread->io_base + 4096) & (~(uint64_t)4095));
     uint64_t _io_end = _io_start + io_thread->io_space_size;
+    uint64_t _pos = _io_start;
 
     // DIRECT_IO需要512B的对齐，为了测试效果最好，进行4KB的内存申请
     void* _buff;
