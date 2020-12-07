@@ -117,6 +117,7 @@ int main(int argc, char** argv)
         _min += _per_worker_io_cnt;
         _threads[i] = std::thread(io_handle, &_workers[i]);
     }
+
     for (int i = 0; i < _num_thread; i++) {
         _threads[i].join();
     }
