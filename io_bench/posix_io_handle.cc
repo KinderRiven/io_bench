@@ -144,7 +144,7 @@ void PosixIOHandle::Run()
         g_io_threads[_thread_id].rw = 1;
         g_io_threads[_thread_id].io_base = _thread_id * _per_thread_io_space_size;
         g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
-        g_io_threads[_thread_id].io_total_size = _thread_id * _per_thread_io_size;
+        g_io_threads[_thread_id].io_total_size = _per_thread_io_size;
         g_io_threads[_thread_id].io_block_size = options_->block_size;
         if (options_->time_based) {
             g_threads[_thread_id] = std::thread(run_io_thread_based_time, &g_io_threads[_thread_id]);
@@ -159,7 +159,7 @@ void PosixIOHandle::Run()
         g_io_threads[_thread_id].rw = 0;
         g_io_threads[_thread_id].io_base = _thread_id * _per_thread_io_space_size;
         g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
-        g_io_threads[_thread_id].io_total_size = _thread_id * _per_thread_io_size;
+        g_io_threads[_thread_id].io_total_size = _per_thread_io_size;
         g_io_threads[_thread_id].io_block_size = options_->block_size;
         if (options_->time_based) {
             g_threads[_thread_id] = std::thread(run_io_thread_based_time, &g_io_threads[_thread_id]);
