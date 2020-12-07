@@ -43,18 +43,18 @@ void do_parse_parameters(int argc, char** argv)
             strcpy(g_options.name, argv[i] + 7);
         } else if (strncmp(argv[i], "--warm", 6) == 0) {
             g_warmup = true;
-        } else if (strncmp(argv[i], "--read", 6) == 0) {
-            if (strcpy(argv[i] + 6, "seq") == 0) {
+        } else if (strncmp(argv[i], "--read=", 7) == 0) {
+            if (strcpy(argv[i] + 7, "seq") == 0) {
                 g_options.read_type = io_bench::IO_SEQ;
-            } else if (strcpy(argv[i] + 6, "random") == 0) {
+            } else if (strcpy(argv[i] + 7, "random") == 0) {
                 g_options.read_type = io_bench::IO_RANDOM;
             } else {
                 goto bad;
             }
-        } else if (strncmp(argv[i], "--write", 7) == 0) {
-            if (strcpy(argv[i] + 7, "seq") == 0) {
+        } else if (strncmp(argv[i], "--write=", 8) == 0) {
+            if (strcpy(argv[i] + 8, "seq") == 0) {
                 g_options.read_type = io_bench::IO_SEQ;
-            } else if (strcpy(argv[i] + 7, "random") == 0) {
+            } else if (strcpy(argv[i] + 8, "random") == 0) {
                 g_options.read_type = io_bench::IO_RANDOM;
             } else {
                 goto bad;
