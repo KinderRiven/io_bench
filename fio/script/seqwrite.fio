@@ -1,5 +1,5 @@
 [global]
-filename=/dev/nvme2n1
+filename=/home/hanshukai/dir1/fio_bench
 direct=1
 ioengine=libaio 
 
@@ -13,6 +13,6 @@ ioengine=libaio
 
 [write_job]
 rw=write
-size=64GB
-numjobs=32
-bs=256KB
+size=16GB
+numjobs=1
+bs=4KB
