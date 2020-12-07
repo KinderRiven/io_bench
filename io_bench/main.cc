@@ -59,10 +59,12 @@ void do_parse_parameters(int argc, char** argv)
 int main(int argc, char** argv)
 {
     do_parse_parameters(argc, argv);
+    printf("Parse Parameteers Finished!\n");
 
     if (g_io_handle_type == IO_HANDLE_POSIX) {
         // 如果需要warmup，则在正式测试前开一个warmup的负载
         if (g_warmup == true) {
+            printf("Warmup!\n");
             io_bench::IO_Options _warm_opt = g_options;
             _warm_opt.num_write_thread += _warm_opt.num_read_thread;
             _warm_opt.num_read_thread = 0;
@@ -70,12 +72,15 @@ int main(int argc, char** argv)
             io_bench::IOHandle* _warmup_io_handle = new io_bench::PosixIOHandle(&_warm_opt);
             _warmup_io_handle->Run();
             _warmup_io_handle->Print();
+            printf("Warmup Finished!\n");
         }
 
         // 开始进行IO测试
+        printf("Test!\n");
         io_bench::IOHandle* _test_io_handle = new io_bench::PosixIOHandle(&g_options);
         _test_io_handle->Run();
         _test_io_handle->Print();
+        printf("Test Finished!\n");
     }
     return 0;
 }
