@@ -46,6 +46,16 @@ void PosixIOHandle::Run()
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         g_threads[_thread_id] = std::thread(run_io_thread, &g_io_threads[_thread_id]);
     }
+
+    _thread_id = 0;
+
+    for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
+        g_threads[_thread_id].detach();
+    }
+
+    for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
+        g_threads[_thread_id].detach();
+    }
 }
 
 void PosixIOHandle::Print()
