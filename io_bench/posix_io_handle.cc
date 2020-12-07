@@ -99,7 +99,7 @@ do_random_write:
     printf("[thread:%02d][do_random_write]\n", io_thread->thread_id);
     for (int i = 0; i < _do_count; i++) {
         _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
-        printf("%llu\n", _pos);
+        // printf("%llu\n", _pos);
         _timer.Start();
         pwrite(_fd, _buff, _io_block_size, _pos);
         _timer.Stop();
@@ -151,9 +151,11 @@ void PosixIOHandle::Run()
     size_t _per_thread_io_space_size = options_->space_size / (options_->num_write_thread + options_->num_read_thread);
 
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
+        // 传参
         io_threads_[_thread_id].thread_id = _thread_id;
         io_threads_[_thread_id].fd = fd_[_thread_id];
         io_threads_[_thread_id].rw = 1;
+        io_threads_[_thread_id].io_type = options_->write_type;
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
@@ -170,9 +172,11 @@ void PosixIOHandle::Run()
     }
 
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
+        // 传参
         io_threads_[_thread_id].thread_id = _thread_id;
         io_threads_[_thread_id].fd = fd_[_thread_id];
         io_threads_[_thread_id].rw = 0;
+        io_threads_[_thread_id].io_type = options_->read_type;
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
