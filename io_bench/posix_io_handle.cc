@@ -52,7 +52,8 @@ static void run_io_thread_based_size(io_thread_t* io_thread)
     memset(_buff, 0xff, _io_block_size);
     assert(_io_start % 4096 == 0);
 
-    printf("[thread:%02d][start:%lluMB][end:%lluMB][bs:%zu]\n", io_thread->thread_id, _io_start, _io_end, _io_block_size);
+    printf("[thread:%02d][start:%lluMB][end:%lluMB][BS:%zuB][SIZE:%zuMB]\n",
+        io_thread->thread_id, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _io_block_size, _io_total_size / (1024 * 1024));
 
     if (io_thread->rw == 1) {
         if (io_thread->io_type == IO_SEQ) {
@@ -140,6 +141,7 @@ void PosixIOHandle::Run()
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         g_io_threads[_thread_id].thread_id = _thread_id;
         g_io_threads[_thread_id].fd = fd_;
+        g_io_threads[_thread_id].rw = 1;
         g_io_threads[_thread_id].io_base = _thread_id * _per_thread_io_space_size;
         g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
         g_io_threads[_thread_id].io_total_size = _thread_id * _per_thread_io_size;
@@ -154,6 +156,7 @@ void PosixIOHandle::Run()
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         g_io_threads[_thread_id].thread_id = _thread_id;
         g_io_threads[_thread_id].fd = fd_;
+        g_io_threads[_thread_id].rw = 0;
         g_io_threads[_thread_id].io_base = _thread_id * _per_thread_io_space_size;
         g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
         g_io_threads[_thread_id].io_total_size = _thread_id * _per_thread_io_size;
