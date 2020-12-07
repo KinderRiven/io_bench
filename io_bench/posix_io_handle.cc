@@ -3,47 +3,7 @@
 
 using namespace io_bench;
 
-struct io_thread_t {
-public:
-    // DDDD
-    int thread_id;
-
-    // 0是读，1是写
-    int rw;
-
-    // IO类型：随机或顺序
-    io_type_t io_type;
-
-    // 进行io的文件描述符
-    int fd;
-
-    // 在该文件的哪一段范围进行IO操作
-    uint64_t io_base;
-
-    uint64_t io_space_size;
-
-    // 一共要进行的IO量
-    size_t io_total_size;
-
-    // IO的粒度
-    size_t io_block_size;
-
-public:
-    // 记录每个请求的延迟
-    std::vector<uint64_t> vec_latency;
-
-    // 所有的请求延迟和
-    uint64_t total_time;
-
-    // 平均时间
-    double avg_time;
-};
-
 static volatile int g_stop = 0;
-
-static io_thread_t g_io_threads[64];
-
-static std::thread g_threads[64];
 
 static void run_io_thread_based_size(io_thread_t* io_thread)
 {
@@ -122,7 +82,7 @@ do_random_write:
 
 end:
     io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
-    printf("[thread:%02d][total_time:%.2fseconds][avg_time:%.2fus]\n",
+    printf("[thread:%02d][total_time:%.2fseconds][av time:%.2fus]\n",
         io_thread->thread_id, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000);
     return;
 }
@@ -179,43 +139,41 @@ void PosixIOHandle::Run()
     size_t _per_thread_io_space_size = options_->space_size / (options_->num_write_thread + options_->num_read_thread);
 
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
-        g_io_threads[_thread_id].thread_id = _thread_id;
-        g_io_threads[_thread_id].fd = fd_[_thread_id];
-        g_io_threads[_thread_id].rw = 1;
-        g_io_threads[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
-        g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
-        g_io_threads[_thread_id].io_total_size = _per_thread_io_size;
-        g_io_threads[_thread_id].io_block_size = options_->block_size;
+        io_threads_[_thread_id].thread_id = _thread_id;
+        io_threads_[_thread_id].fd = fd_[_thread_id];
+        io_threads_[_thread_id].rw = 1;
+        io_threads_[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
+        io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
+        io_threads_[_thread_id].io_total_size = _per_thread_io_size;
+        io_threads_[_thread_id].io_block_size = options_->block_size;
         if (options_->time_based) {
-            g_threads[_thread_id] = std::thread(run_io_thread_based_time, &g_io_threads[_thread_id]);
+            threads_[_thread_id] = std::thread(run_io_thread_based_time, &io_threads_[_thread_id]);
         } else {
-            g_threads[_thread_id] = std::thread(run_io_thread_based_size, &g_io_threads[_thread_id]);
+            threads_[_thread_id] = std::thread(run_io_thread_based_size, &io_threads_[_thread_id]);
         }
     }
 
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
-        g_io_threads[_thread_id].thread_id = _thread_id;
-        g_io_threads[_thread_id].fd = fd_[_thread_id];
-        g_io_threads[_thread_id].rw = 0;
-        g_io_threads[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
-        g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
-        g_io_threads[_thread_id].io_total_size = _per_thread_io_size;
-        g_io_threads[_thread_id].io_block_size = options_->block_size;
+        io_threads_[_thread_id].thread_id = _thread_id;
+        io_threads_[_thread_id].fd = fd_[_thread_id];
+        io_threads_[_thread_id].rw = 0;
+        io_threads_[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
+        io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
+        io_threads_[_thread_id].io_total_size = _per_thread_io_size;
+        io_threads_[_thread_id].io_block_size = options_->block_size;
         if (options_->time_based) {
-            g_threads[_thread_id] = std::thread(run_io_thread_based_time, &g_io_threads[_thread_id]);
+            threads_[_thread_id] = std::thread(run_io_thread_based_time, &io_threads_[_thread_id]);
         } else {
-            g_threads[_thread_id] = std::thread(run_io_thread_based_size, &g_io_threads[_thread_id]);
+            threads_[_thread_id] = std::thread(run_io_thread_based_size, &io_threads_[_thread_id]);
         }
     }
 
     _thread_id = 0;
-
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
-        g_threads[_thread_id].join();
+        threads_[_thread_id].join();
     }
-
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
-        g_threads[_thread_id].join();
+        threads_[_thread_id].join();
     }
 }
 

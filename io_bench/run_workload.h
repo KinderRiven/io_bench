@@ -77,6 +77,42 @@ public:
     }
 };
 
+struct io_thread_t {
+public:
+    // DDDD
+    int thread_id;
+
+    // 0是读，1是写
+    int rw;
+
+    // IO类型：随机或顺序
+    io_type_t io_type;
+
+    // 进行io的文件描述符
+    int fd;
+
+    // 在该文件的哪一段范围进行IO操作
+    uint64_t io_base;
+
+    uint64_t io_space_size;
+
+    // 一共要进行的IO量
+    size_t io_total_size;
+
+    // IO的粒度
+    size_t io_block_size;
+
+public:
+    // 记录每个请求的延迟
+    std::vector<uint64_t> vec_latency;
+
+    // 所有的请求延迟和
+    uint64_t total_time;
+
+    // 平均时间
+    double avg_time;
+};
+
 class IOHandle {
 public:
     virtual void Run() = 0;
@@ -103,6 +139,10 @@ private:
     char file_path_[128];
 
     int fd_[128];
+
+    io_thread_t io_threads_[64];
+
+    std::thread threads_[64];
 };
 
 class SpdkIOHandle : public IOHandle {
