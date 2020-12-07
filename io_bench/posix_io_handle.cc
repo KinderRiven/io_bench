@@ -99,6 +99,7 @@ do_random_write:
     printf("[thread:%02d][do_random_write]\n", io_thread->thread_id);
     for (int i = 0; i < _do_count; i++) {
         _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
+        printf("%llu\n", _pos);
         _timer.Start();
         pwrite(_fd, _buff, _io_block_size, _pos);
         _timer.Stop();
@@ -190,9 +191,11 @@ void PosixIOHandle::Run()
     _thread_id = 0;
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
+        close(io_threads_[_thread_id].fd);
     }
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
+        close(io_threads_[_thread_id].fd);
     }
 }
 
