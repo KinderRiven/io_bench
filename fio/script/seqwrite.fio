@@ -1,18 +1,18 @@
 [global]
 filename=/home/hanshukai/dir1/fio_bench
 direct=1
-ioengine=libaio 
+ioengine=sync
 
 # log_avg_msec=5000
 # write_bw_log=mlog
 # write_iops_log=mlog
 # write_lat_log=mlog
 
-# runtime=60
-# time_based
+runtime=60
+time_based
 
 [write_job]
 rw=write
-size=16GB
+size=64GB
 numjobs=1
 bs=4KB
