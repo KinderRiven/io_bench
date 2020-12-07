@@ -48,7 +48,7 @@ static void run_io_thread(io_thread_t* io_thread)
     }
 
 do_seq_read:
-    printf("[do_seq_read]\n");
+    printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0; i < _do_count; i++) {
         _timer.Start();
         pread(_fd, _buff, _io_block_size, _pos);
@@ -65,7 +65,7 @@ do_seq_read:
     goto end;
 
 do_seq_write:
-    printf("[do_seq_write]\n");
+    printf("[thread:%02d][do_seq_write]\n", io_thread->thread_id);
     for (int i = 0; i < _do_count; i++) {
         _timer.Start();
         pwrite(_fd, _buff, _io_block_size, _pos);
@@ -82,7 +82,7 @@ do_seq_write:
     goto end;
 
 do_random_read:
-    printf("[do_seq_read]\n");
+    printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0; i < _do_count; i++) {
         _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
         _timer.Start();
@@ -96,7 +96,7 @@ do_random_read:
     goto end;
 
 do_random_write:
-    printf("[do_random_write]\n");
+    printf("[thread:%02d][do_random_write]\n", io_thread->thread_id);
     for (int i = 0; i < _do_count; i++) {
         _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
         _timer.Start();
