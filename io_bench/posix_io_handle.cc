@@ -126,7 +126,7 @@ PosixIOHandle::PosixIOHandle(IO_Options* options)
 
     for (int i = 0; i < (options->num_read_thread + options->num_write_thread); i++) {
         char _new_file[128];
-        sprintf(_new_file, "%s.%d", _new_file, i);
+        sprintf(_new_file, "%s.%d", file_path_, i);
         fd_[i] = open(_new_file, O_RDWR | O_DIRECT | O_CREAT, 0666);
         printf("CREATE FILE (%s)\n", _new_file);
         // 打洞，DDDDD
