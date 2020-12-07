@@ -122,8 +122,8 @@ do_random_write:
 
 end:
     io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
-    printf("[thread:%02d][total_time:%lluseconds][avg_time:%.2fus]\n",
-        io_thread->thread_id, io_thread->total_time / (1000000000UL), io_thread->avg_time / (10000000));
+    printf("[thread:%02d][total_time:%.2fseconds][avg_time:%.2fus]\n",
+        io_thread->thread_id, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000);
     return;
 }
 
