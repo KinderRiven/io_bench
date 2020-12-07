@@ -44,17 +44,17 @@ void do_parse_parameters(int argc, char** argv)
         } else if (strncmp(argv[i], "--warm", 6) == 0) {
             g_warmup = true;
         } else if (strncmp(argv[i], "--read=", 7) == 0) {
-            if (strcpy(argv[i] + 7, "seq") == 0) {
+            if (strcmp(argv[i] + 7, "seq") == 0) {
                 g_options.read_type = io_bench::IO_SEQ;
-            } else if (strcpy(argv[i] + 7, "random") == 0) {
+            } else if (strcmp(argv[i] + 7, "random") == 0) {
                 g_options.read_type = io_bench::IO_RANDOM;
             } else {
                 goto bad;
             }
         } else if (strncmp(argv[i], "--write=", 8) == 0) {
-            if (strcpy(argv[i] + 8, "seq") == 0) {
+            if (strcmp(argv[i] + 8, "seq") == 0) {
                 g_options.read_type = io_bench::IO_SEQ;
-            } else if (strcpy(argv[i] + 8, "random") == 0) {
+            } else if (strcmp(argv[i] + 8, "random") == 0) {
                 g_options.read_type = io_bench::IO_RANDOM;
             } else {
                 goto bad;
