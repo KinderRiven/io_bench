@@ -61,7 +61,7 @@ void do_parse_parameters(int argc, char** argv)
             }
         } else if (i > 0) {
         bad:
-            printf("Something bad!\n");
+            printf("Something Bad!\n");
             exit(1);
         }
     }
