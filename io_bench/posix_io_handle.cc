@@ -121,7 +121,7 @@ PosixIOHandle::PosixIOHandle(IO_Options* options)
 
     // 建立一个大文件
     sprintf(file_path_, "%s/%s", options->path, options->name);
-    fd_ = open(file_path_, O_RDWR | O_DIRECT, 0666);
+    fd_ = open(file_path_, O_RDWR | O_DIRECT | O_CREAT, 0666);
     printf("CREATE FILE (%s)\n", file_path_);
 
     // 打洞，DDDDD
