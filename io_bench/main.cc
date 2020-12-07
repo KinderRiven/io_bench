@@ -53,9 +53,9 @@ void do_parse_parameters(int argc, char** argv)
             }
         } else if (strncmp(argv[i], "--write=", 8) == 0) {
             if (strcmp(argv[i] + 8, "seq") == 0) {
-                g_options.read_type = io_bench::IO_SEQ;
+                g_options.write_type = io_bench::IO_SEQ;
             } else if (strcmp(argv[i] + 8, "random") == 0) {
-                g_options.read_type = io_bench::IO_RANDOM;
+                g_options.write_type = io_bench::IO_RANDOM;
             } else {
                 goto bad;
             }
