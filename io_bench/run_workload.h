@@ -102,7 +102,7 @@ private:
 
     char file_path_[128];
 
-    int fd_;
+    int fd_[128];
 };
 
 class SpdkIOHandle : public IOHandle {

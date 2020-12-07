@@ -52,8 +52,8 @@ static void run_io_thread_based_size(io_thread_t* io_thread)
     memset(_buff, 0xff, _io_block_size);
     assert(_io_start % 4096 == 0);
 
-    printf("[thread:%02d][start:%lluMB][end:%lluMB][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
-        io_thread->thread_id, _io_start / (1024 * 1024), _io_end / (1024 * 1024),
+    printf("[thread:%02d][fd:%d][start:%lluMB][end:%lluMB][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
+        io_thread->thread_id, _fd, _io_start / (1024 * 1024), _io_end / (1024 * 1024),
         _io_block_size, _io_total_size / (1024 * 1024), _do_count);
 
     if (io_thread->rw == 1) {
@@ -121,12 +121,17 @@ PosixIOHandle::PosixIOHandle(IO_Options* options)
     mkdir(result_save_path_, 0666);
 
     // 建立一个大文件
+    size_t _per_thread_io_space_size = options_->space_size / (options_->num_write_thread + options_->num_read_thread);
     sprintf(file_path_, "%s/%s", options->path, options->name);
-    fd_ = open(file_path_, O_RDWR | O_DIRECT | O_CREAT, 0666);
-    printf("CREATE FILE (%s)\n", file_path_);
 
-    // 打洞，DDDDD
-    fallocate(fd_, 0, 0, options_->space_size);
+    for (int i = 0; i < (options->num_read_thread + options->num_write_thread); i++) {
+        char _new_file[128];
+        sprintf(_new_file, "%s.%d", _new_file, i);
+        fd_[i] = open(_new_file, O_RDWR | O_DIRECT | O_CREAT, 0666);
+        printf("CREATE FILE (%s)\n", _new_file);
+        // 打洞，DDDDD
+        fallocate(fd_[i], 0, 0, _per_thread_io_space_size);
+    }
 }
 
 PosixIOHandle::~PosixIOHandle()
@@ -141,9 +146,9 @@ void PosixIOHandle::Run()
 
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         g_io_threads[_thread_id].thread_id = _thread_id;
-        g_io_threads[_thread_id].fd = fd_;
+        g_io_threads[_thread_id].fd = fd_[_thread_id];
         g_io_threads[_thread_id].rw = 1;
-        g_io_threads[_thread_id].io_base = _thread_id * _per_thread_io_space_size;
+        g_io_threads[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
         g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
         g_io_threads[_thread_id].io_total_size = _per_thread_io_size;
         g_io_threads[_thread_id].io_block_size = options_->block_size;
@@ -156,9 +161,9 @@ void PosixIOHandle::Run()
 
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         g_io_threads[_thread_id].thread_id = _thread_id;
-        g_io_threads[_thread_id].fd = fd_;
+        g_io_threads[_thread_id].fd = fd_[_thread_id];
         g_io_threads[_thread_id].rw = 0;
-        g_io_threads[_thread_id].io_base = _thread_id * _per_thread_io_space_size;
+        g_io_threads[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
         g_io_threads[_thread_id].io_space_size = _per_thread_io_space_size;
         g_io_threads[_thread_id].io_total_size = _per_thread_io_size;
         g_io_threads[_thread_id].io_block_size = options_->block_size;
