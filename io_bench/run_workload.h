@@ -126,6 +126,9 @@ public:
 
     // 平均时间
     double avg_time;
+
+    // IOPS
+    double iops;
 };
 
 class IOHandle {
