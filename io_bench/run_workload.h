@@ -55,13 +55,17 @@ public:
         : path("/home/hanshukai/dir1")
         , name("io_bench")
     {
+        read_type = IO_SEQ;
+
+        write_type = IO_SEQ;
+
         direct_io = true;
 
-        space_size = 2UL * 1024 * 1024 * 1024;
+        space_size = 8UL * 1024 * 1024 * 1024;
 
         num_read_thread = 0;
 
-        num_write_thread = 1;
+        num_write_thread = 4;
 
         time_based = false;
 
@@ -69,7 +73,7 @@ public:
 
         block_size = 4096;
 
-        io_size = 2UL * 1024 * 1024 * 1024;
+        io_size = 8UL * 1024 * 1024 * 1024;
     }
 };
 
