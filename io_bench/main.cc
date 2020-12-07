@@ -85,7 +85,6 @@ int main(int argc, char** argv)
             _warmup_io_handle->Print();
             printf("Warmup Finished!\n");
         }
-
         // 开始进行IO测试
         printf("Test!\n");
         io_bench::IOHandle* _test_io_handle = new io_bench::PosixIOHandle(&g_options);

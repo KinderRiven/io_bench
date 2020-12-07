@@ -111,6 +111,12 @@ public:
     // IO的粒度
     size_t io_block_size;
 
+    // 是否基于时间运行
+    bool time_based;
+
+    // 运行多长时间停止
+    int time;
+
 public:
     // 记录每个请求的延迟
     std::vector<uint64_t> vec_latency;

@@ -7,6 +7,8 @@ static volatile int g_stop = 0;
 
 static void run_io_thread(io_thread_t* io_thread)
 {
+    bool _time_based = io_thread->time_based;
+    int _run_time = io_thread->time * 1000000000UL;
     Timer _timer;
     int _fd = io_thread->fd;
     Workload* _workload = io_thread->workload;
@@ -16,7 +18,7 @@ static void run_io_thread(io_thread_t* io_thread)
     size_t _io_block_size = io_thread->io_block_size;
 
     uint64_t _space_count = _io_space_size / _io_block_size;
-    uint64_t _do_count = _io_total_size / _io_block_size;
+    uint64_t _do_count = (_time_based == true) ? 0 : _io_total_size / _io_block_size;
 
     // 为了测试效果最好，需要进行4KB的对齐
     uint64_t _io_start = 0;
@@ -47,9 +49,9 @@ static void run_io_thread(io_thread_t* io_thread)
         }
     }
 
-do_seq_read:
+do_seq_read: // 顺序读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
-    for (int i = 0; i < _do_count; i++) {
+    for (int i = 0;; i++) {
         _timer.Start();
         pread(_fd, _buff, _io_block_size, _pos);
         _timer.Stop();
@@ -61,12 +63,22 @@ do_seq_read:
         uint64_t _t = _timer.Get();
         io_thread->vec_latency.push_back(_t);
         io_thread->total_time += _t;
-    }
-    goto end;
 
-do_seq_write:
+        // 判断结束方式
+        if (_time_based) {
+            if (io_thread->total_time > _run_time) {
+                break;
+            }
+            _do_count++;
+        } else if (i > _do_count) {
+            break;
+        }
+    }
+    goto end; // 顺序读结束
+
+do_seq_write: // 顺序写开始
     printf("[thread:%02d][do_seq_write]\n", io_thread->thread_id);
-    for (int i = 0; i < _do_count; i++) {
+    for (int i = 0;; i++) {
         _timer.Start();
         pwrite(_fd, _buff, _io_block_size, _pos);
         _timer.Stop();
@@ -78,12 +90,22 @@ do_seq_write:
         uint64_t _t = _timer.Get();
         io_thread->vec_latency.push_back(_t);
         io_thread->total_time += _t;
-    }
-    goto end;
 
-do_random_read:
+        // 判断结束方式
+        if (_time_based) {
+            if (io_thread->total_time > _run_time) {
+                break;
+            }
+            _do_count++;
+        } else if (i > _do_count) {
+            break;
+        }
+    }
+    goto end; // 顺序写结束
+
+do_random_read: // 随机读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
-    for (int i = 0; i < _do_count; i++) {
+    for (int i = 0;; i++) {
         _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
         _timer.Start();
         pread(_fd, _buff, _io_block_size, _pos);
@@ -92,14 +114,23 @@ do_random_read:
         uint64_t _t = _timer.Get();
         io_thread->vec_latency.push_back(_t);
         io_thread->total_time += _t;
-    }
-    goto end;
 
-do_random_write:
+        // 判断结束方式
+        if (_time_based) {
+            if (io_thread->total_time > _run_time) {
+                break;
+            }
+            _do_count++;
+        } else if (i > _do_count) {
+            break;
+        }
+    }
+    goto end; // 随机读结束
+
+do_random_write: // 随机写开始
     printf("[thread:%02d][do_random_write]\n", io_thread->thread_id);
-    for (int i = 0; i < _do_count; i++) {
+    for (int i = 0;; i++) {
         _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
-        // printf("address:%llu block_id:%llu\n", _pos, _pos / _io_block_size);
         _timer.Start();
         pwrite(_fd, _buff, _io_block_size, _pos);
         _timer.Stop();
@@ -107,13 +138,23 @@ do_random_write:
         uint64_t _t = _timer.Get();
         io_thread->vec_latency.push_back(_t);
         io_thread->total_time += _t;
+
+        // 判断结束方式
+        if (_time_based) {
+            if (io_thread->total_time > _run_time) {
+                break;
+            }
+            _do_count++;
+        } else if (i > _do_count) {
+            break;
+        }
     }
-    goto end;
+    goto end; // 随机写结束
 
 end:
     io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
-    printf("[thread:%02d][total_time:%.2fseconds][av time:%.2fus]\n",
-        io_thread->thread_id, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000);
+    printf("[thread:%02d][total_time:%.2fseconds][avg_time:%.2fus][count:%llu]\n",
+        io_thread->thread_id, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000, _do_count);
     return;
 }
 
@@ -160,6 +201,12 @@ void PosixIOHandle::Run()
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
 
+        // Time based
+        if (options_->time_based) {
+            io_threads_[_thread_id].time_based = true;
+            io_threads_[_thread_id].time = options_->time;
+        }
+
         // 创建负载
         if (options_->workload_type == WORKLOAD_DBBENCH) {
             io_threads_[_thread_id].workload = new DBBenchWorkload(1000 + _thread_id);
@@ -180,6 +227,12 @@ void PosixIOHandle::Run()
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
+
+        // Time based
+        if (options_->time_based) {
+            io_threads_[_thread_id].time_based = true;
+            io_threads_[_thread_id].time = options_->time;
+        }
 
         // 创建负载
         if (options_->workload_type == WORKLOAD_DBBENCH) {
