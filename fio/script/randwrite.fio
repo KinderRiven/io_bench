@@ -1,7 +1,8 @@
 [global]
 filename=/home/hanshukai/dir1/fio_bench
 direct=1
-ioengine=sync
+ioengine=libaio
+iodepth=1
 
 # log_avg_msec=5000
 # write_bw_log=mlog
