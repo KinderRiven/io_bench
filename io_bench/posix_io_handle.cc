@@ -8,7 +8,7 @@ static volatile int g_stop = 0;
 static void run_io_thread(io_thread_t* io_thread)
 {
     bool _time_based = io_thread->time_based;
-    int _run_time = io_thread->time * 1000000000UL;
+    uint64_t _run_time = (uint64_t)io_thread->time * 1000000000UL;
     Timer _timer;
     int _fd = io_thread->fd;
     Workload* _workload = io_thread->workload;
@@ -31,8 +31,8 @@ static void run_io_thread(io_thread_t* io_thread)
     memset(_buff, 0xff, _io_block_size);
     assert(_io_start % 4096 == 0);
 
-    printf("[thread:%02d][fd:%d][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
-        io_thread->thread_id, _fd, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
+    printf("[thread:%02d][fd:%d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
+        io_thread->thread_id, _fd, io_thread->time, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
         _io_block_size, _io_total_size / (1024 * 1024), _do_count);
 
     if (io_thread->rw == 1) {
