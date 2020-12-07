@@ -25,10 +25,11 @@ void do_parse_parameters(int argc, char** argv)
         double d;
         uint64_t n;
         char junk;
+
         if (sscanf(argv[i], "--io_size=%llu%c", &n, &junk) == 1) {
-            g_options.io_size = n;
+            g_options.io_size = n * (1024UL * 1024 * 1024);
         } else if (sscanf(argv[i], "--space_size=%llu%c", &n, &junk) == 1) {
-            g_options.space_size = n;
+            g_options.space_size = n * (1024UL * 1024 * 1024);
         } else if (sscanf(argv[i], "--time=%llu%c", &n, &junk) == 1) {
             g_options.time_based = true;
             g_options.time = n;
@@ -42,7 +43,25 @@ void do_parse_parameters(int argc, char** argv)
             strcpy(g_options.name, argv[i] + 7);
         } else if (strncmp(argv[i], "--warm", 6) == 0) {
             g_warmup = true;
+        } else if (strncmp(argv[i], "--read", 6) == 0) {
+            if (strcpy(argv[i] + 6, "seq") == 0) {
+                g_options.read_type = io_bench::IO_SEQ;
+            } else if (strcpy(argv[i] + 6, "random") == 0) {
+                g_options.read_type = io_bench::IO_RANDOM;
+            } else {
+                goto bad;
+            }
+        } else if (strncmp(argv[i], "--write", 7) == 0) {
+            if (strcpy(argv[i] + 7, "seq") == 0) {
+                g_options.read_type = io_bench::IO_SEQ;
+            } else if (strcpy(argv[i] + 7, "random") == 0) {
+                g_options.read_type = io_bench::IO_RANDOM;
+            } else {
+                goto bad;
+            }
         } else if (i > 0) {
+        bad:
+            printf("Something bad!\n");
             exit(1);
         }
     }
