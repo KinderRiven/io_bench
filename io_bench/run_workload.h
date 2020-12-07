@@ -95,6 +95,10 @@ private:
     IO_Options* options_;
 
     char result_save_path_[128];
+
+    char file_path_[128];
+
+    int fd_;
 };
 
 class SpdkIOHandle : public IOHandle {
