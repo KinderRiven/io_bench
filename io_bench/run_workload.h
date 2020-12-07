@@ -75,9 +75,9 @@ public:
 
 class IOHandle {
 public:
-    virtual void Run();
+    virtual void Run() = 0;
 
-    virtual void Print();
+    virtual void Print() = 0;
 };
 
 class PosixIOHandle : public IOHandle {
