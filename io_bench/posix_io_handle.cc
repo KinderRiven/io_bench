@@ -5,16 +5,21 @@ using namespace io_bench;
 
 static volatile int g_stop = 0;
 
-static void run_io_thread_based_size(io_thread_t* io_thread)
+static void run_io_thread(io_thread_t* io_thread)
 {
     Timer _timer;
     int _fd = io_thread->fd;
+    Workload* _workload = io_thread->workload;
+
+    size_t _io_space_size = io_thread->io_space_size;
     size_t _io_total_size = io_thread->io_total_size;
     size_t _io_block_size = io_thread->io_block_size;
+
+    uint64_t _space_count = _io_space_size / _io_block_size;
     uint64_t _do_count = _io_total_size / _io_block_size;
 
     // 为了测试效果最好，需要进行4KB的对齐
-    uint64_t _io_start = ((io_thread->io_base + 4096) & (~(uint64_t)4095));
+    uint64_t _io_start = 0;
     uint64_t _io_end = _io_start + io_thread->io_space_size;
     uint64_t _pos = _io_start;
 
@@ -24,8 +29,8 @@ static void run_io_thread_based_size(io_thread_t* io_thread)
     memset(_buff, 0xff, _io_block_size);
     assert(_io_start % 4096 == 0);
 
-    printf("[thread:%02d][fd:%d][start:%lluMB][end:%lluMB][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
-        io_thread->thread_id, _fd, _io_start / (1024 * 1024), _io_end / (1024 * 1024),
+    printf("[thread:%02d][fd:%d][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
+        io_thread->thread_id, _fd, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
         _io_block_size, _io_total_size / (1024 * 1024), _do_count);
 
     if (io_thread->rw == 1) {
@@ -75,33 +80,35 @@ do_seq_write:
     goto end;
 
 do_random_read:
+    for (int i = 0; i < _do_count; i++) {
+        _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
+        _timer.Start();
+        pread(_fd, _buff, _io_block_size, _pos);
+        _timer.Stop();
+
+        uint64_t _t = _timer.Get();
+        io_thread->vec_latency.push_back(_t);
+        io_thread->total_time += _t;
+    }
     goto end;
 
 do_random_write:
+    for (int i = 0; i < _do_count; i++) {
+        _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
+        _timer.Start();
+        pwrite(_fd, _buff, _io_block_size, _pos);
+        _timer.Stop();
+
+        uint64_t _t = _timer.Get();
+        io_thread->vec_latency.push_back(_t);
+        io_thread->total_time += _t;
+    }
     goto end;
 
 end:
     io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
     printf("[thread:%02d][total_time:%.2fseconds][av time:%.2fus]\n",
         io_thread->thread_id, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000);
-    return;
-}
-
-static void run_io_thread_based_time(io_thread_t* io_thread)
-{
-do_seq_read:
-    goto end;
-
-do_seq_write:
-    goto end;
-
-do_random_read:
-    goto end;
-
-do_random_write:
-    goto end;
-
-end:
     return;
 }
 
@@ -142,30 +149,38 @@ void PosixIOHandle::Run()
         io_threads_[_thread_id].thread_id = _thread_id;
         io_threads_[_thread_id].fd = fd_[_thread_id];
         io_threads_[_thread_id].rw = 1;
-        io_threads_[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
-        if (options_->time_based) {
-            threads_[_thread_id] = std::thread(run_io_thread_based_time, &io_threads_[_thread_id]);
-        } else {
-            threads_[_thread_id] = std::thread(run_io_thread_based_size, &io_threads_[_thread_id]);
+
+        // 创建负载
+        if (options_->workload_type == WORKLOAD_DBBENCH) {
+            io_threads_[_thread_id].workload = new DBBenchWorkload(1000 + _thread_id);
+        } else if (options_->workload_type == WORKLOAD_YCSB) {
+            io_threads_[_thread_id].workload = new YCSBWorkload();
         }
+
+        // 创建线程
+        threads_[_thread_id] = std::thread(run_io_thread, &io_threads_[_thread_id]);
     }
 
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         io_threads_[_thread_id].thread_id = _thread_id;
         io_threads_[_thread_id].fd = fd_[_thread_id];
         io_threads_[_thread_id].rw = 0;
-        io_threads_[_thread_id].io_base = 0; // _thread_id * _per_thread_io_space_size;
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
-        if (options_->time_based) {
-            threads_[_thread_id] = std::thread(run_io_thread_based_time, &io_threads_[_thread_id]);
-        } else {
-            threads_[_thread_id] = std::thread(run_io_thread_based_size, &io_threads_[_thread_id]);
+
+        // 创建负载
+        if (options_->workload_type == WORKLOAD_DBBENCH) {
+            io_threads_[_thread_id].workload = new DBBenchWorkload(1000 + _thread_id);
+        } else if (options_->workload_type == WORKLOAD_YCSB) {
+            io_threads_[_thread_id].workload = new YCSBWorkload();
         }
+
+        // 创建线程
+        threads_[_thread_id] = std::thread(run_io_thread, &io_threads_[_thread_id]);
     }
 
     _thread_id = 0;

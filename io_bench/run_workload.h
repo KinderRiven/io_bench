@@ -1,6 +1,7 @@
 #ifndef INCLUDE_RUN_WORKLOAD_H_
 #define INCLUDE_RUN_WORKLOAD_H_
 
+#include "generate_workload.h"
 #include "header.h"
 
 namespace io_bench {
@@ -8,6 +9,11 @@ namespace io_bench {
 enum io_type_t {
     IO_SEQ,
     IO_RANDOM
+};
+
+enum workload_type_t {
+    WORKLOAD_DBBENCH,
+    WORKLOAD_YCSB,
 };
 
 class IO_Options {
@@ -35,6 +41,9 @@ public:
 
     // 写类型（随机或顺序）
     io_type_t write_type;
+
+    // 负载发生器
+    workload_type_t workload_type;
 
     // 本次测试是否基于时间，若此参数为true，则 io_size参数失效
     bool time_based;
@@ -79,6 +88,9 @@ public:
 
 struct io_thread_t {
 public:
+    Workload* workload;
+
+public:
     // DDDD
     int thread_id;
 
@@ -90,9 +102,6 @@ public:
 
     // 进行io的文件描述符
     int fd;
-
-    // 在该文件的哪一段范围进行IO操作
-    uint64_t io_base;
 
     uint64_t io_space_size;
 

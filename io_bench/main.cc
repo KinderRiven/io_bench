@@ -2,11 +2,6 @@
 #include "header.h"
 #include "run_workload.h"
 
-enum workload_type_t {
-    WORKLOAD_DBBENCH,
-    WORKLOAD_YCSB,
-};
-
 enum io_handle_type_t {
     IO_HANDLE_POSIX,
     IO_HANDLE_SPDK,
@@ -14,9 +9,6 @@ enum io_handle_type_t {
 
 // 是否需要warmup操作，如果为ture，则进行实际测试前会对要做IO的空间做一遍顺序写
 static bool g_warmup = true;
-
-// 负载的生成类型
-static workload_type_t g_workload_type = WORKLOAD_DBBENCH;
 
 // IO的处理方式
 // [1] posix：通过文件系统read/write接口进行数据读写
