@@ -1,4 +1,5 @@
 #include "run_workload.h"
+#include "timer.h"
 
 using namespace io_bench;
 
@@ -26,6 +27,16 @@ public:
 
     // IO的粒度
     size_t io_block_size;
+
+public:
+    // 记录每个请求的延迟
+    std::vector<uint64_t> vec_latency;
+
+    // 所有的请求延迟和
+    uint64_t total_time;
+
+    // 平均时间
+    double avg_time;
 };
 
 static volatile int g_stop = 0;
@@ -36,6 +47,7 @@ static std::thread g_threads[64];
 
 static void run_io_thread_based_size(io_thread_t* io_thread)
 {
+    Timer _timer;
     int _fd = io_thread->fd;
     size_t _io_total_size = io_thread->io_total_size;
     size_t _io_block_size = io_thread->io_block_size;
@@ -71,15 +83,34 @@ static void run_io_thread_based_size(io_thread_t* io_thread)
     }
 
 do_seq_read:
-    goto end;
-
-do_seq_write:
     for (int i = 0; i < _do_count; i++) {
-        pwrite(_fd, _buff, _io_block_size, _pos);
+        _timer.Start();
+        pread(_fd, _buff, _io_block_size, _pos);
+        _timer.Stop();
+
         _pos += _io_block_size;
         if (_pos > _io_end) {
             _pos = _io_start;
         }
+        uint64_t _t = _timer.Get();
+        io_thread->vec_latency.push_back(_t);
+        io_thread->total_time += _t;
+    }
+    goto end;
+
+do_seq_write:
+    for (int i = 0; i < _do_count; i++) {
+        _timer.Start();
+        pwrite(_fd, _buff, _io_block_size, _pos);
+        _timer.Stop();
+
+        _pos += _io_block_size;
+        if (_pos > _io_end) {
+            _pos = _io_start;
+        }
+        uint64_t _t = _timer.Get();
+        io_thread->vec_latency.push_back(_t);
+        io_thread->total_time += _t;
     }
     goto end;
 
@@ -90,6 +121,9 @@ do_random_write:
     goto end;
 
 end:
+    io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
+    printf("[thread:%02d][total_time:%lluseconds][avg_time:%.2fus]\n",
+        io_thread->thread_id, io_thread->total_time / (1000000000UL), io_thread->avg_time / (10000000));
     return;
 }
 
