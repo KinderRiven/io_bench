@@ -73,6 +73,7 @@ static void attach_cb(void* cb_ctx, const struct spdk_nvme_transport_id* trid, s
     assert(device->num_ns == 1);
     device->ns = spdk_nvme_ctrlr_get_ns(ctrlr, 1);
     device->ns_capacity = spdk_nvme_ns_get_size(device->ns);
+    printf("[capacity:%zuGB]\n", device->ns_capacity / (1024UL * 1024 * 1024));
 }
 
 static void remove_cb(void* cb_ctx, struct spdk_nvme_ctrlr* ctrlr)
@@ -416,6 +417,7 @@ void SpdkIOHandle::Run()
     }
 
     _thread_id = 0;
+
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
         spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
