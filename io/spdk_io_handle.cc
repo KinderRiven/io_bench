@@ -78,7 +78,6 @@ static void run_io_thread(io_thread_t* io_thread)
     bool _time_based = io_thread->time_based;
     uint64_t _run_time = (uint64_t)io_thread->time * 1000000000UL;
     Timer _timer;
-    int _fd = io_thread->fd;
     Workload* _workload = io_thread->workload;
 
     size_t _io_space_size = io_thread->io_space_size;
@@ -261,7 +260,7 @@ void SpdkIOHandle::Run()
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         // 传参
         io_threads_[_thread_id].thread_id = _thread_id;
-        io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_->ctrlr, nullptr, 0);
+        io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
         io_threads_[_thread_id].io_depth = 8;
         io_threads_[_thread_id].rw = 1;
         io_threads_[_thread_id].io_type = options_->write_type;
