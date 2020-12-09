@@ -140,6 +140,7 @@ static void run_io_thread(io_thread_t* io_thread)
     io_context_t* _io_ctx[128];
     for (int i = 0; i < _io_depth; i++) {
         _io_ctx[i] = new io_context_t(_io_block_size);
+        assert(_io_ctx[i]->buff != nullptr);
     }
 
     printf("[thread:%02d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu][io_depth:%d]\n",
