@@ -343,7 +343,7 @@ SpdkIOHandle::SpdkIOHandle(IO_Options* options)
 
 SpdkIOHandle::~SpdkIOHandle()
 {
-    printf("free spdk device!\n");
+    printf("Free SPDK Device!\n");
     spdk_nvme_detach(device_.ctrlr);
 }
 
