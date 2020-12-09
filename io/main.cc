@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             // io_bench::IOHandle* _warmup_io_handle = new io_bench::PosixIOHandle(&_warm_opt);
             io_bench::IOHandle* _warmup_io_handle = new io_bench::SpdkIOHandle(&_warm_opt);
             _warmup_io_handle->Run();
-            _warmup_io_handle->Print();
+            // _warmup_io_handle->Print();
             printf("Warmup Finished!\n");
             delete _warmup_io_handle;
         }
