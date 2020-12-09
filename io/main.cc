@@ -89,7 +89,7 @@ int main(int argc, char** argv)
         // 开始进行IO测试
         printf("Test!\n");
         // io_bench::IOHandle* _test_io_handle = new io_bench::PosixIOHandle(&g_options);
-        io_bench::IOHandle* _warmup_io_handle = new io_bench::SpdkIOHandle(&g_options);
+        io_bench::IOHandle* _test_io_handle = new io_bench::SpdkIOHandle(&g_options);
         _test_io_handle->Run();
         _test_io_handle->Print();
         printf("Test Finished!\n");
