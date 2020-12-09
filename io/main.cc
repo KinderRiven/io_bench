@@ -94,6 +94,7 @@ int main(int argc, char** argv)
         _test_io_handle->Run();
         _test_io_handle->Print();
         printf("Test Finished!\n");
+        delete _test_io_handle;
     }
     return 0;
 }

@@ -185,9 +185,9 @@ do_seq_read: // 顺序读开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j]->timer.Get();
-            io_thread->vec_latency.push_back(_t);
-            io_thread->total_time += _t;
+            // uint64_t _t = _io_ctx[j]->timer.Get();
+            // io_thread->vec_latency.push_back(_t);
+            // io_thread->total_time += _t;
         }
         // 判断结束方式
         if (_time_based) {
@@ -264,9 +264,9 @@ do_random_read: // 随机读开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j]->timer.Get();
-            io_thread->vec_latency.push_back(_t);
-            io_thread->total_time += _t;
+            // uint64_t _t = _io_ctx[j]->timer.Get();
+            // io_thread->vec_latency.push_back(_t);
+            // io_thread->total_time += _t;
         }
         // 判断结束方式
         if (_time_based) {
@@ -301,9 +301,9 @@ do_random_write: // 随机写开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j]->timer.Get();
-            io_thread->vec_latency.push_back(_t);
-            io_thread->total_time += _t;
+            // uint64_t _t = _io_ctx[j]->timer.Get();
+            // io_thread->vec_latency.push_back(_t);
+            // io_thread->total_time += _t;
         }
         // 判断结束方式
         if (_time_based) {
@@ -318,6 +318,9 @@ do_random_write: // 随机写开始
     goto end; // 随机写结束
 
 end:
+    for (int i = 0; i < _io_depth; i++) {
+        delete _io_ctx[i];
+    }
     io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
     io_thread->iops = 1000000000.0 / io_thread->avg_time;
     printf("[thread:%02d][count:%llu][total_time:%.2fseconds][avg_time:%.2fus][iops:%.2f]\n",
@@ -347,6 +350,7 @@ SpdkIOHandle::SpdkIOHandle(IO_Options* options)
 
 SpdkIOHandle::~SpdkIOHandle()
 {
+    spdk_nvme_detach(device_.ctrlr);
 }
 
 void SpdkIOHandle::Run()
@@ -415,9 +419,11 @@ void SpdkIOHandle::Run()
     _thread_id = 0;
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
+        spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
     }
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
+        spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
     }
 }
 
