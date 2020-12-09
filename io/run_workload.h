@@ -7,7 +7,6 @@
 #include "spdk/env.h"
 #include "spdk/nvme.h"
 #include "spdk/stdinc.h"
-#include "spdk/vmd.h"
 
 namespace io_bench {
 

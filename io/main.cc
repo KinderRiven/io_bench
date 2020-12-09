@@ -80,14 +80,16 @@ int main(int argc, char** argv)
             _warm_opt.num_write_thread += _warm_opt.num_read_thread;
             _warm_opt.num_read_thread = 0;
             _warm_opt.write_type = io_bench::IO_SEQ; // warmup的时候开多线程进行顺序写
-            io_bench::IOHandle* _warmup_io_handle = new io_bench::PosixIOHandle(&_warm_opt);
+            // io_bench::IOHandle* _warmup_io_handle = new io_bench::PosixIOHandle(&_warm_opt);
+            io_bench::IOHandle* _warmup_io_handle = new io_bench::SpdkIOHandle(&_warm_opt);
             _warmup_io_handle->Run();
             _warmup_io_handle->Print();
             printf("Warmup Finished!\n");
         }
         // 开始进行IO测试
         printf("Test!\n");
-        io_bench::IOHandle* _test_io_handle = new io_bench::PosixIOHandle(&g_options);
+        // io_bench::IOHandle* _test_io_handle = new io_bench::PosixIOHandle(&g_options);
+        io_bench::IOHandle* _warmup_io_handle = new io_bench::SpdkIOHandle(&g_options);
         _test_io_handle->Run();
         _test_io_handle->Print();
         printf("Test Finished!\n");
