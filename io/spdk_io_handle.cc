@@ -98,15 +98,15 @@ public:
 
 static void read_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
-    assert(spdk_nvme_cpl_is_success(cpl) == true);
-    io_context_t* _ctx = (io_context_t*)context;
+    // assert(spdk_nvme_cpl_is_success(cpl) == true);
+    // io_context_t* _ctx = (io_context_t*)context;
     // _ctx->timer.Stop();
 }
 
 static void write_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
-    assert(spdk_nvme_cpl_is_success(cpl) == true);
-    io_context_t* _ctx = (io_context_t*)context;
+    // assert(spdk_nvme_cpl_is_success(cpl) == true);
+    // io_context_t* _ctx = (io_context_t*)context;
     // _ctx->timer.Stop();
 }
 
