@@ -285,7 +285,7 @@ void SpdkIOHandle::Run()
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         // 传参
         io_threads_[_thread_id].thread_id = _thread_id;
-        io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_->ctrlr, nullptr, 0);
+        io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
         io_threads_[_thread_id].io_depth = 8;
         io_threads_[_thread_id].rw = 0;
         io_threads_[_thread_id].io_type = options_->read_type;
