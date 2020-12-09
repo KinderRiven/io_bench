@@ -94,7 +94,7 @@ public:
 
 static void read_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
-    io_context_t *_ctx = (io_context_t *)context;
+    io_context_t* _ctx = (io_context_t*)context;
     _ctx->timer.Stop();
 }
 
@@ -128,7 +128,7 @@ static void run_io_thread(io_thread_t* io_thread)
     assert(_io_start % 4096 == 0);
 
     // DIRECT_IO需要512B的对齐，为了测试效果最好，进行4KB的内存申请
-    io_context_t _io_ctx[128];
+    io_context_t* _io_ctx[128];
     for (int i = 0; i < _io_depth; i++) {
         _io_ctx[i] = new io_context_t(_io_block_size);
     }
