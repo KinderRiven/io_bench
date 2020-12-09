@@ -385,7 +385,6 @@ void SpdkIOHandle::Run()
         // 创建线程
         threads_[_thread_id] = std::thread(run_io_thread, &io_threads_[_thread_id]);
     }
-
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         // 传参
         io_threads_[_thread_id].thread_id = _thread_id;
@@ -414,7 +413,6 @@ void SpdkIOHandle::Run()
     }
 
     _thread_id = 0;
-
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
         spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
@@ -423,7 +421,7 @@ void SpdkIOHandle::Run()
         threads_[_thread_id].join();
         spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
     }
-    printf("everything is finished!\n");
+    printf("Everything is finished!\n");
 }
 
 void SpdkIOHandle::Print()
