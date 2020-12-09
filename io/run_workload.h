@@ -78,7 +78,7 @@ public:
 
         num_read_thread = 0;
 
-        num_write_thread = 4;
+        num_write_thread = 1;
 
         time_based = false;
 
