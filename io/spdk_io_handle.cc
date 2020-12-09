@@ -42,7 +42,7 @@ public:
 
 public:
     // 记录每个请求的延迟
-    std::vector<uint64_t> vec_latency;
+    // std::vector<uint64_t> vec_latency;
 
     // 所有的请求延迟和
     uint64_t total_time;
@@ -113,8 +113,8 @@ static void run_io_thread(io_thread_t* io_thread)
     int _res;
     bool _time_based = io_thread->time_based;
     uint64_t _run_time = (uint64_t)io_thread->time * 1000000000UL;
-    Workload* _workload = io_thread->workload;
 
+    Workload* _workload = io_thread->workload;
     SPDKDevice* _device = io_thread->device;
     struct spdk_nvme_qpair* _io_qpair = io_thread->io_qpair;
     assert(_device != nullptr && _io_qpair != nullptr);
@@ -134,7 +134,6 @@ static void run_io_thread(io_thread_t* io_thread)
     uint64_t _pos = _io_start;
     assert(_io_start % 4096 == 0);
 
-    // DIRECT_IO需要512B的对齐，为了测试效果最好，进行4KB的内存申请
     io_context_t* _io_ctx[128];
     for (int i = 0; i < _io_depth; i++) {
         _io_ctx[i] = new io_context_t(_io_block_size);
@@ -206,7 +205,7 @@ do_seq_write: // 顺序写开始
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
             _io_ctx[j]->timer.Start();
-            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)_io_ctx[j], 0);
+            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, (void*)_io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
             if (_pos > _io_end) {
@@ -224,7 +223,7 @@ do_seq_write: // 顺序写开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
-            io_thread->vec_latency.push_back(_t);
+            // io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
         // 判断结束方式
