@@ -156,8 +156,6 @@ public:
 private:
     IO_Options* options_;
 
-    struct spdk_env_opts env_opts_;
-
     SPDKDevice device_;
 
     char result_save_path_[128];

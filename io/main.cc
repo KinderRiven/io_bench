@@ -72,6 +72,10 @@ int main(int argc, char** argv)
     do_parse_parameters(argc, argv);
     printf("Parse Parameteers Finished!\n");
 
+    struct spdk_env_opts _env_opts;
+    spdk_env_opts_init(&_env_opts);
+    spdk_env_init(&_env_opts);
+
     if (g_io_handle_type == IO_HANDLE_POSIX) {
         // 如果需要warmup，则在正式测试前开一个warmup的负载
         if (g_warmup == true) {
