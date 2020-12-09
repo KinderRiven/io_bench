@@ -119,6 +119,7 @@ static void run_io_thread(io_thread_t* io_thread)
 
     SPDKDevice* _device = io_thread->device;
     struct spdk_nvme_qpair* _io_qpair = io_thread->io_qpair;
+    assert(_device != nullptr && _io_qpair != nullptr);
 
     size_t _io_space_size = io_thread->io_space_size;
     size_t _io_total_size = io_thread->io_total_size;
@@ -141,9 +142,9 @@ static void run_io_thread(io_thread_t* io_thread)
         _io_ctx[i] = new io_context_t(_io_block_size);
     }
 
-    printf("[thread:%02d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
+    printf("[thread:%02d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu][io_depth:%d]\n",
         io_thread->thread_id, io_thread->time, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
-        _io_block_size, _io_total_size / (1024 * 1024), _do_count);
+        _io_block_size, _io_total_size / (1024 * 1024), _do_count, _io_depth);
 
     if (io_thread->rw == 1) {
         if (io_thread->io_type == IO_SEQ) {
