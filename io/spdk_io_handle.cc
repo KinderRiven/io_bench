@@ -350,6 +350,7 @@ SpdkIOHandle::SpdkIOHandle(IO_Options* options)
 
 SpdkIOHandle::~SpdkIOHandle()
 {
+    printf("free spdk device!\n");
     spdk_nvme_detach(device_.ctrlr);
 }
 
@@ -426,6 +427,7 @@ void SpdkIOHandle::Run()
         threads_[_thread_id].join();
         spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
     }
+    printf("everything is finished!\n");
 }
 
 void SpdkIOHandle::Print()
