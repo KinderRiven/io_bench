@@ -155,8 +155,8 @@ do_seq_read: // 顺序读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
         for (int j = 0; j < _io_depth; j++) {
-            _io_ctx[j].timer.Start();
-            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
+            _io_ctx[j]->timer.Start();
+            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
             if (_pos > _io_end) {
@@ -165,7 +165,7 @@ do_seq_read: // 顺序读开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j].timer.Get();
+            uint64_t _t = _io_ctx[j]->timer.Get();
             io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
@@ -185,8 +185,8 @@ do_seq_write: // 顺序写开始
     printf("[thread:%02d][do_seq_write]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
         for (int j = 0; j < _io_depth; j++) {
-            _io_ctx[j].timer.Start();
-            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
+            _io_ctx[j]->timer.Start();
+            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
             if (_pos > _io_end) {
@@ -195,7 +195,7 @@ do_seq_write: // 顺序写开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j].timer.Get();
+            uint64_t _t = _io_ctx[j]->timer.Get();
             io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
@@ -216,8 +216,8 @@ do_random_read: // 随机读开始
     for (int i = 0;; i++) {
         for (int j = 0; j < _io_depth; j++) {
             _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
-            _io_ctx[j].timer.Start();
-            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
+            _io_ctx[j]->timer.Start();
+            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
             if (_pos > _io_end) {
@@ -226,7 +226,7 @@ do_random_read: // 随机读开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j].timer.Get();
+            uint64_t _t = _io_ctx[j]->timer.Get();
             io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
@@ -247,8 +247,8 @@ do_random_write: // 随机写开始
     for (int i = 0;; i++) {
         for (int j = 0; j < _io_depth; j++) {
             _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
-            _io_ctx[j].timer.Start();
-            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
+            _io_ctx[j]->timer.Start();
+            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
             if (_pos > _io_end) {
@@ -257,7 +257,7 @@ do_random_write: // 随机写开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j].timer.Get();
+            uint64_t _t = _io_ctx[j]->timer.Get();
             io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
