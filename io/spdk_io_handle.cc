@@ -98,16 +98,16 @@ public:
 
 static void read_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
+    assert(spdk_nvme_cpl_is_success(cpl) == true);
     io_context_t* _ctx = (io_context_t*)context;
     _ctx->timer.Stop();
-    assert(spdk_nvme_cpl_is_success(cpl) == true);
 }
 
 static void write_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
+    assert(spdk_nvme_cpl_is_success(cpl) == true);
     io_context_t* _ctx = (io_context_t*)context;
     _ctx->timer.Stop();
-    assert(spdk_nvme_cpl_is_success(cpl) == true);
 }
 
 static void run_io_thread(io_thread_t* io_thread)
@@ -168,7 +168,7 @@ do_seq_read: // 顺序读开始
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
             _io_ctx[j]->timer.Start();
-            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
+            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
             if (_pos > _io_end) {
@@ -208,6 +208,7 @@ do_seq_write: // 顺序写开始
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
             _io_ctx[j]->timer.Start();
+            printf("%d %d\n", _pos / 512, _io_block_size / 512);
             _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
@@ -223,6 +224,7 @@ do_seq_write: // 顺序写开始
                 break;
             }
         }
+        printf("%d\n", __num_io);
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
@@ -249,7 +251,7 @@ do_random_read: // 随机读开始
         for (int j = 0; j < _io_depth; j++) {
             _pos = ((_workload->Get() % _space_count) * io_thread->io_block_size) + _io_start;
             _io_ctx[j]->timer.Start();
-            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
+            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
         }
         // 等待CQ
@@ -286,7 +288,7 @@ do_random_write: // 随机写开始
         for (int j = 0; j < _io_depth; j++) {
             _pos = ((_workload->Get() % _space_count) * io_thread->io_block_size) + _io_start;
             _io_ctx[j]->timer.Start();
-            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
+            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
         }
         // 等待CQ
