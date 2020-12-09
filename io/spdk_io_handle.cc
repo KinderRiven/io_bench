@@ -3,11 +3,13 @@
 
 using namespace io_bench;
 
-static volatile int g_stop = 0;
-
 struct io_thread_t {
 public:
     Workload* workload;
+
+    spdk_nvme_qpair* io_qpair;
+
+    SPDKDevice* device;
 
 public:
     // DDDD
@@ -21,10 +23,6 @@ public:
 
     //io_qpair
     int io_depth;
-
-    spdk_nvme_qpair* io_qpair;
-
-    SPDKDevice* device;
 
     uint64_t io_space_start;
 
@@ -226,7 +224,7 @@ do_seq_write: // 顺序写开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
-            // io_thread->vec_latency.push_back(_t);
+            io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
         // 判断结束方式
@@ -366,8 +364,8 @@ void SpdkIOHandle::Run()
         io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
         io_threads_[_thread_id].io_depth = 8;
         io_threads_[_thread_id].rw = 1;
-        io_threads_[_thread_id].io_space_start = _per_thread_io_space_size * _thread_id;
         io_threads_[_thread_id].io_type = options_->write_type;
+        io_threads_[_thread_id].io_space_start = _per_thread_io_space_size * _thread_id;
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
