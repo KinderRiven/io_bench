@@ -22,7 +22,9 @@ public:
     //io_qpair
     int io_depth;
 
-    struct spdk_nvme_qpair* io_qpair;
+    spdk_nvme_qpair* io_qpair;
+
+    SPDKDevice* device;
 
     uint64_t io_space_size;
 
@@ -44,6 +46,8 @@ public:
 
     // 所有的请求延迟和
     uint64_t total_time;
+
+    uint64_t parllel_time;
 
     // 平均时间
     double avg_time;
@@ -73,12 +77,40 @@ static void remove_cb(void* cb_ctx, struct spdk_nvme_ctrlr* ctrlr)
 {
 }
 
+struct io_context_t {
+public:
+    char* buff;
+    Timer timer;
+
+public:
+    io_context_t(size_t sz)
+    {
+    }
+
+    ~io_context_t()
+    {
+    }
+};
+
+static void read_cb(void* context, const struct spdk_nvme_cpl* cpl)
+{
+    io_context_t *_ctx = (io_context_t *)context;
+    _ctx->timer.Stop();
+}
+
+static void write_cb(void* context, const struct spdk_nvme_cpl* cpl)
+{
+}
+
 static void run_io_thread(io_thread_t* io_thread)
 {
+    int _res;
     bool _time_based = io_thread->time_based;
     uint64_t _run_time = (uint64_t)io_thread->time * 1000000000UL;
-    Timer _timer;
     Workload* _workload = io_thread->workload;
+
+    SPDKDevice* _device = io_thread->device;
+    struct spdk_nvme_qpair* _io_qpair = io_thread->io_qpair;
 
     size_t _io_space_size = io_thread->io_space_size;
     size_t _io_total_size = io_thread->io_total_size;
@@ -93,12 +125,13 @@ static void run_io_thread(io_thread_t* io_thread)
     uint64_t _io_start = 0;
     uint64_t _io_end = _io_start + io_thread->io_space_size;
     uint64_t _pos = _io_start;
+    assert(_io_start % 4096 == 0);
 
     // DIRECT_IO需要512B的对齐，为了测试效果最好，进行4KB的内存申请
-    void* _buff;
-    posix_memalign(&_buff, 4096, _io_block_size);
-    memset(_buff, 0xff, _io_block_size);
-    assert(_io_start % 4096 == 0);
+    io_context_t _io_ctx[128];
+    for (int i = 0; i < _io_depth; i++) {
+        _io_ctx[i] = new io_context_t(_io_block_size);
+    }
 
     printf("[thread:%02d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
         io_thread->thread_id, io_thread->time, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
@@ -121,18 +154,21 @@ static void run_io_thread(io_thread_t* io_thread)
 do_seq_read: // 顺序读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
-        _timer.Start();
-        // TODO IO
-        _timer.Stop();
-
-        _pos += _io_block_size;
-        if (_pos > _io_end) {
-            _pos = _io_start;
+        for (int j = 0; j < _io_depth; j++) {
+            _io_ctx[j].timer.Start();
+            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
+            assert(_res == 0);
+            _pos += _io_block_size;
+            if (_pos > _io_end) {
+                _pos = _io_start;
+            }
         }
-        uint64_t _t = _timer.Get();
-        io_thread->vec_latency.push_back(_t);
-        io_thread->total_time += _t;
-
+        // 保存结果
+        for (int j = 0; j < _io_depth; j++) {
+            uint64_t _t = _io_ctx[j].timer.Get();
+            io_thread->vec_latency.push_back(_t);
+            io_thread->total_time += _t;
+        }
         // 判断结束方式
         if (_time_based) {
             if (io_thread->total_time > _run_time) {
@@ -148,18 +184,21 @@ do_seq_read: // 顺序读开始
 do_seq_write: // 顺序写开始
     printf("[thread:%02d][do_seq_write]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
-        _timer.Start();
-        // TODO IO
-        _timer.Stop();
-
-        _pos += _io_block_size;
-        if (_pos > _io_end) {
-            _pos = _io_start;
+        for (int j = 0; j < _io_depth; j++) {
+            _io_ctx[j].timer.Start();
+            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
+            assert(_res == 0);
+            _pos += _io_block_size;
+            if (_pos > _io_end) {
+                _pos = _io_start;
+            }
         }
-        uint64_t _t = _timer.Get();
-        io_thread->vec_latency.push_back(_t);
-        io_thread->total_time += _t;
-
+        // 保存结果
+        for (int j = 0; j < _io_depth; j++) {
+            uint64_t _t = _io_ctx[j].timer.Get();
+            io_thread->vec_latency.push_back(_t);
+            io_thread->total_time += _t;
+        }
         // 判断结束方式
         if (_time_based) {
             if (io_thread->total_time > _run_time) {
@@ -175,15 +214,22 @@ do_seq_write: // 顺序写开始
 do_random_read: // 随机读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
-        _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
-        _timer.Start();
-        // TODO IO
-        _timer.Stop();
-
-        uint64_t _t = _timer.Get();
-        io_thread->vec_latency.push_back(_t);
-        io_thread->total_time += _t;
-
+        for (int j = 0; j < _io_depth; j++) {
+            _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
+            _io_ctx[j].timer.Start();
+            _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
+            assert(_res == 0);
+            _pos += _io_block_size;
+            if (_pos > _io_end) {
+                _pos = _io_start;
+            }
+        }
+        // 保存结果
+        for (int j = 0; j < _io_depth; j++) {
+            uint64_t _t = _io_ctx[j].timer.Get();
+            io_thread->vec_latency.push_back(_t);
+            io_thread->total_time += _t;
+        }
         // 判断结束方式
         if (_time_based) {
             if (io_thread->total_time > _run_time) {
@@ -199,15 +245,22 @@ do_random_read: // 随机读开始
 do_random_write: // 随机写开始
     printf("[thread:%02d][do_random_write]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
-        _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
-        _timer.Start();
-        // TODO IO
-        _timer.Stop();
-
-        uint64_t _t = _timer.Get();
-        io_thread->vec_latency.push_back(_t);
-        io_thread->total_time += _t;
-
+        for (int j = 0; j < _io_depth; j++) {
+            _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
+            _io_ctx[j].timer.Start();
+            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j].buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
+            assert(_res == 0);
+            _pos += _io_block_size;
+            if (_pos > _io_end) {
+                _pos = _io_start;
+            }
+        }
+        // 保存结果
+        for (int j = 0; j < _io_depth; j++) {
+            uint64_t _t = _io_ctx[j].timer.Get();
+            io_thread->vec_latency.push_back(_t);
+            io_thread->total_time += _t;
+        }
         // 判断结束方式
         if (_time_based) {
             if (io_thread->total_time > _run_time) {
