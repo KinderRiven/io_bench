@@ -26,6 +26,8 @@ public:
 
     SPDKDevice* device;
 
+    uint64_t io_space_start;
+
     uint64_t io_space_size;
 
     // 一共要进行的IO量
@@ -85,6 +87,8 @@ public:
 public:
     io_context_t(size_t sz)
     {
+        buff = (char*)spdk_zmalloc(sz, 4096, nullptr, SPDK_ENV_SOCKET_ID_ANY, SPDK_MALLOC_DMA);
+        memset(buff, 0xff, sz);
     }
 
     ~io_context_t()
@@ -96,10 +100,14 @@ static void read_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
     io_context_t* _ctx = (io_context_t*)context;
     _ctx->timer.Stop();
+    assert(spdk_nvme_cpl_is_success(cpl) == true);
 }
 
 static void write_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
+    io_context_t* _ctx = (io_context_t*)context;
+    _ctx->timer.Stop();
+    assert(spdk_nvme_cpl_is_success(cpl) == true);
 }
 
 static void run_io_thread(io_thread_t* io_thread)
@@ -122,7 +130,7 @@ static void run_io_thread(io_thread_t* io_thread)
     _do_count /= _io_depth;
 
     // 为了测试效果最好，需要进行4KB的对齐
-    uint64_t _io_start = 0;
+    uint64_t _io_start = io_thread->io_space_start;
     uint64_t _io_end = _io_start + io_thread->io_space_size;
     uint64_t _pos = _io_start;
     assert(_io_start % 4096 == 0);
@@ -215,14 +223,10 @@ do_random_read: // 随机读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
         for (int j = 0; j < _io_depth; j++) {
-            _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
+            _pos = ((_workload->Get() % _space_count) * io_thread->io_block_size) + _io_start;
             _io_ctx[j]->timer.Start();
             _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)&_io_ctx[j], 0);
             assert(_res == 0);
-            _pos += _io_block_size;
-            if (_pos > _io_end) {
-                _pos = _io_start;
-            }
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
@@ -246,14 +250,10 @@ do_random_write: // 随机写开始
     printf("[thread:%02d][do_random_write]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
         for (int j = 0; j < _io_depth; j++) {
-            _pos = (_workload->Get() % _space_count) * io_thread->io_block_size;
+            _pos = ((_workload->Get() % _space_count) * io_thread->io_block_size) + _io_start;
             _io_ctx[j]->timer.Start();
             _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
             assert(_res == 0);
-            _pos += _io_block_size;
-            if (_pos > _io_end) {
-                _pos = _io_start;
-            }
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
@@ -316,6 +316,7 @@ void SpdkIOHandle::Run()
         io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
         io_threads_[_thread_id].io_depth = 8;
         io_threads_[_thread_id].rw = 1;
+        io_threads_[_thread_id].io_space_start = _per_thread_io_space_size * _thread_id;
         io_threads_[_thread_id].io_type = options_->write_type;
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
@@ -342,6 +343,7 @@ void SpdkIOHandle::Run()
         io_threads_[_thread_id].io_depth = 8;
         io_threads_[_thread_id].rw = 0;
         io_threads_[_thread_id].io_type = options_->read_type;
+        io_threads_[_thread_id].io_space_start = _per_thread_io_space_size * _thread_id;
         io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
         io_threads_[_thread_id].io_total_size = _per_thread_io_size;
         io_threads_[_thread_id].io_block_size = options_->block_size;
