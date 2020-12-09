@@ -90,6 +90,7 @@ int main(int argc, char** argv)
             // _warmup_io_handle->Print();
             printf("Warmup Finished!\n");
             delete _warmup_io_handle;
+            printf("Delete finished!\n");
         }
         // 开始进行IO测试
         printf("Test!\n");
