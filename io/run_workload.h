@@ -94,7 +94,7 @@ public:
 
 class IOHandle {
 public:
-    virtual ~IOHandle() = 0;
+    virtual ~IOHandle(){};
 
     virtual void Run() = 0;
 
