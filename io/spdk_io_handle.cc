@@ -289,12 +289,16 @@ SpdkIOHandle::SpdkIOHandle(IO_Options* options)
     struct tm* _lt = localtime(&_t);
     sprintf(result_save_path_, "%04d%02d%02d_%02d%02d%02d", _lt->tm_year, _lt->tm_mon, _lt->tm_mday, _lt->tm_hour, _lt->tm_min, _lt->tm_sec);
     mkdir(result_save_path_, 0666);
-    // SPDK init device
+    // spdk init device
     int _res;
     spdk_env_opts_init(&env_opts_);
     _res = spdk_env_init(&env_opts_);
+    assert(_res == 0);
+    device_.transport_string = "trtype:PCIe traddr:0000:d8:00.0";
     _res = spdk_nvme_transport_id_parse(&device_.trid, device_.transport_string.c_str());
+    assert(_res == 0);
     _res = spdk_nvme_probe(&device_.trid, &device_, probe_cb, attach_cb, remove_cb);
+    assert(_res == 0);
 }
 
 SpdkIOHandle::~SpdkIOHandle()
