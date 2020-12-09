@@ -227,9 +227,9 @@ do_seq_write: // 顺序写开始
         printf("%d\n", __num_io);
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            uint64_t _t = _io_ctx[j]->timer.Get();
-            io_thread->vec_latency.push_back(_t);
-            io_thread->total_time += _t;
+            // uint64_t _t = _io_ctx[j]->timer.Get();
+            // io_thread->vec_latency.push_back(_t);
+            // io_thread->total_time += _t;
         }
         // 判断结束方式
         if (_time_based) {
