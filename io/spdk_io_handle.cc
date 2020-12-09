@@ -100,8 +100,8 @@ static void run_io_thread(io_thread_t* io_thread)
     memset(_buff, 0xff, _io_block_size);
     assert(_io_start % 4096 == 0);
 
-    printf("[thread:%02d][fd:%d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
-        io_thread->thread_id, _fd, io_thread->time, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
+    printf("[thread:%02d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu]\n",
+        io_thread->thread_id, io_thread->time, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
         _io_block_size, _io_total_size / (1024 * 1024), _do_count);
 
     if (io_thread->rw == 1) {
