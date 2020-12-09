@@ -5,5 +5,7 @@ SPDK_LINK_FLAGS := -Wl,--whole-archive -Lthird-party/dpdk -lspdk_env_dpdk  -lspd
     -lspdk_thread -lspdk_sock_posix -lspdk_sock -lspdk_notify -lspdk_net -lspdk_nvme \
     -lspdk_log -lspdk_trace -lspdk_util -lspdk_copy -lspdk_conf -lspdk_vmd
 
+LINK_FLAGS := -Wl,--no-whole-archive -lpthread -lrt -lnuma -ldl -luuid -lm -lisal
+
 all:
-	g++ -std=c++11 -O0 io/main.cc io/posix_io_handle.cc -o test $(SPDK_LINK_FLAGS) -lpthread
+	g++ -std=c++11 -Iinclude -Iio -O0 io/main.cc io/posix_io_handle.cc io/spdk_io_handle.cc -o test $(SPDK_LINK_FLAGS) $(LINK_FLAGS)
