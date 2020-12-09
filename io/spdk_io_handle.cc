@@ -196,7 +196,8 @@ do_seq_write: // 顺序写开始
     for (int i = 0;; i++) {
         for (int j = 0; j < _io_depth; j++) {
             _io_ctx[j]->timer.Start();
-            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)&_io_ctx[j], 0);
+            printf("%d %d\n", _pos / 512, _io_block_size / 512);
+            _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
             if (_pos > _io_end) {
