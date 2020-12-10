@@ -5,11 +5,11 @@ using namespace io_bench;
 
 struct io_thread_t {
 public:
+    SPDKDevice* device;
+
     Workload* workload;
 
     spdk_nvme_qpair* io_qpair;
-
-    SPDKDevice* device;
 
 public:
     // DDDD
@@ -104,6 +104,7 @@ static void read_cb(void* context, const struct spdk_nvme_cpl* cpl)
 static void write_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
     assert(spdk_nvme_cpl_is_success(cpl) == true);
+    printf("write callback!\n");
     io_context_t* _ctx = (io_context_t*)context;
     _ctx->timer.Stop();
 }
