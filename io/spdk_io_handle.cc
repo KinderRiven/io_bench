@@ -232,9 +232,13 @@ do_seq_write: // 顺序写开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
+            printf("%d_timer\n", j);
             uint64_t _t = _io_ctx[j]->timer.Get();
+            printf("%d_vector\n", j);
             io_thread->vec_latency.push_back(_t);
+            printf("%d_total\n", j);
             io_thread->total_time += _t;
+            printf("%d_end\n", j);
         }
         // 判断结束方式
         if (_time_based) {
