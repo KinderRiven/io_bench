@@ -174,6 +174,9 @@ do_seq_read: // 顺序读开始
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
             _io_ctx[j]->timer.Start();
+            if (_io_block_size < 4096) {
+                printf("%d %d\n", _pos / 512, _io_block_size / 512);
+            }
             _res = spdk_nvme_ns_cmd_read(_device->ns, _io_qpair, _io_ctx[j]->buff, _pos / 512, _io_block_size / 512, read_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
