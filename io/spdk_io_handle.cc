@@ -57,6 +57,7 @@ public:
     io_thread_t()
         : device(nullptr)
         , io_qpair(nullptr)
+        , total_time(0)
     {
     }
 };
