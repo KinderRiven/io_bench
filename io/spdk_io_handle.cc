@@ -42,7 +42,7 @@ public:
 
 public:
     // 记录每个请求的延迟
-    // std::vector<uint64_t> vec_latency;
+    std::vector<uint64_t> vec_latency;
 
     // 所有的请求延迟和
     uint64_t total_time;
