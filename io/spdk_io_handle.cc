@@ -234,6 +234,7 @@ do_seq_write: // 顺序写开始
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
             // io_thread->vec_latency.push_back(_t);
+            printf("%.2fus\n", 1.0 * _t / 1000);
             io_thread->total_time += _t;
         }
         // 判断结束方式
@@ -330,8 +331,8 @@ end:
     }
     io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
     io_thread->iops = 1000000000.0 / io_thread->avg_time;
-    printf("[thread:%02d][count:%llu][run_time:%.2fseconds][total_time:%.2fseconds][avg_time:%.2fus][iops:%.2f]\n",
-        io_thread->thread_id, _do_count, _total_run_time, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000, io_thread->iops);
+    printf("[thread:%02d][count:%llu][run_time:%.2fseconds][avg_time:%.2fus][iops:%.2f]\n",
+        io_thread->thread_id, _do_count, _total_run_time, io_thread->avg_time / 1000, io_thread->iops);
     return;
 }
 
