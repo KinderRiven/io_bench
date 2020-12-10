@@ -86,8 +86,8 @@ static void remove_cb(void* cb_ctx, struct spdk_nvme_ctrlr* ctrlr)
 
 struct io_context_t {
 public:
-    char* buff;
     Timer timer;
+    char* buff;
 
 public:
     io_context_t(size_t sz)
@@ -233,6 +233,7 @@ do_seq_write: // 顺序写开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
+            assert(_t < 1000);
             // io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
