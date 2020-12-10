@@ -58,7 +58,6 @@ public:
         : device(nullptr)
         , io_qpair(nullptr)
     {
-        vec_latency.clear();
     }
 };
 
