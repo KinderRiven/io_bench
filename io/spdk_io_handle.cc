@@ -201,8 +201,13 @@ do_seq_read: // 顺序读开始
                 break;
             }
             _do_count += _io_depth;
-        } else if (i > _do_count) {
-            break;
+        } else {
+            if (!(i % 100000)) {
+                printf("[Pending:%d/%llu(%.2f%%)]\n", i, _do_count, 100.0 * i / _do_count);
+            }
+            if (i > _do_count) {
+                break;
+            }
         }
     }
     goto end; // 顺序读结束
@@ -241,11 +246,13 @@ do_seq_write: // 顺序写开始
                 break;
             }
             _do_count += _io_depth;
-        } else if (i > _do_count) {
+        } else {
             if (!(i % 100000)) {
                 printf("[Pending:%d/%llu(%.2f%%)]\n", i, _do_count, 100.0 * i / _do_count);
             }
-            break;
+            if (i > _do_count) {
+                break;
+            }
         }
     }
     goto end; // 顺序写结束
@@ -281,8 +288,13 @@ do_random_read: // 随机读开始
                 break;
             }
             _do_count += _io_depth;
-        } else if (i > _do_count) {
-            break;
+        } else {
+            if (!(i % 100000)) {
+                printf("[Pending:%d/%llu(%.2f%%)]\n", i, _do_count, 100.0 * i / _do_count);
+            }
+            if (i > _do_count) {
+                break;
+            }
         }
     }
     goto end; // 随机读结束
@@ -318,11 +330,13 @@ do_random_write: // 随机写开始
                 break;
             }
             _do_count += _io_depth;
-        } else if (i > _do_count) {
+        } else {
             if (!(i % 100000)) {
                 printf("[Pending:%d/%llu(%.2f%%)]\n", i, _do_count, 100.0 * i / _do_count);
             }
-            break;
+            if (i > _do_count) {
+                break;
+            }
         }
     }
     goto end; // 随机写结束
