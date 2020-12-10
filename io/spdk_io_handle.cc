@@ -192,6 +192,9 @@ do_seq_read: // 顺序读开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
+            if (_io_block_size < 4096) {
+                printf("%lluus\n", _t / 1000);
+            }
             io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
