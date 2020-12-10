@@ -151,7 +151,6 @@ static void run_io_thread(io_thread_t* io_thread)
     printf("[thread:%02d][time:%dseconds][start:%lluMB][end:%lluMB][SC:%llu][BS:%zuB][SIZE:%zuMB][COUNT:%llu][io_depth:%d]\n",
         io_thread->thread_id, io_thread->time, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
         _io_block_size, _io_total_size / (1024 * 1024), _do_count, _io_depth);
-    printf("%llu\n", io_thread->total_time);
     _total_timer.Start();
 
     if (io_thread->rw == 1) {
