@@ -235,9 +235,6 @@ do_seq_write: // 顺序写开始
             io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
-        if (!(i % 100000)) {
-            printf("%d/%llu\n", i, _do_count);
-        }
         // 判断结束方式
         if (_time_based) {
             if (io_thread->total_time > _run_time) {
@@ -245,6 +242,9 @@ do_seq_write: // 顺序写开始
             }
             _do_count += _io_depth;
         } else if (i > _do_count) {
+            if (!(i % 100000)) {
+                printf("[Pending:%d/%llu(%.2f%%)]\n", i, _do_count, 100.0 * i / _do_count);
+            }
             break;
         }
     }
@@ -319,6 +319,9 @@ do_random_write: // 随机写开始
             }
             _do_count += _io_depth;
         } else if (i > _do_count) {
+            if (!(i % 100000)) {
+                printf("[Pending:%d/%llu(%.2f%%)]\n", i, _do_count, 100.0 * i / _do_count);
+            }
             break;
         }
     }
