@@ -134,7 +134,6 @@ static void run_io_thread(io_thread_t* io_thread)
     int _io_depth = io_thread->io_depth;
     uint64_t _space_count = _io_space_size / _io_block_size;
     uint64_t _do_count = (_time_based == true) ? 0 : _io_total_size / _io_block_size;
-    _do_count /= _io_depth;
 
     // 为了测试效果最好，需要进行4KB的对齐
     uint64_t _io_start = io_thread->io_space_start;
@@ -170,7 +169,7 @@ static void run_io_thread(io_thread_t* io_thread)
 
 do_seq_read: // 顺序读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
-    for (int i = 0;; i++) {
+    for (int i = 0;; i += _io_depth) {
         int __num_io = 0;
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
@@ -201,7 +200,7 @@ do_seq_read: // 顺序读开始
             if (io_thread->total_time > _run_time) {
                 break;
             }
-            _do_count++;
+            _do_count += _io_depth;
         } else if (i > _do_count) {
             break;
         }
@@ -210,7 +209,7 @@ do_seq_read: // 顺序读开始
 
 do_seq_write: // 顺序写开始
     printf("[thread:%02d][do_seq_write]\n", io_thread->thread_id);
-    for (int i = 0;; i++) {
+    for (int i = 0;; i += _io_depth) {
         int __num_io = 0;
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
@@ -241,7 +240,7 @@ do_seq_write: // 顺序写开始
             if (io_thread->total_time > _run_time) {
                 break;
             }
-            _do_count++;
+            _do_count += _io_depth;
         } else if (i > _do_count) {
             break;
         }
@@ -250,7 +249,7 @@ do_seq_write: // 顺序写开始
 
 do_random_read: // 随机读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
-    for (int i = 0;; i++) {
+    for (int i = 0;; i += _io_depth) {
         int __num_io = 0;
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
@@ -278,7 +277,7 @@ do_random_read: // 随机读开始
             if (io_thread->total_time > _run_time) {
                 break;
             }
-            _do_count++;
+            _do_count += _io_depth;
         } else if (i > _do_count) {
             break;
         }
@@ -287,7 +286,7 @@ do_random_read: // 随机读开始
 
 do_random_write: // 随机写开始
     printf("[thread:%02d][do_random_write]\n", io_thread->thread_id);
-    for (int i = 0;; i++) {
+    for (int i = 0;; i += _io_depth) {
         int __num_io = 0;
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
@@ -306,16 +305,16 @@ do_random_write: // 随机写开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            // uint64_t _t = _io_ctx[j]->timer.Get();
+            uint64_t _t = _io_ctx[j]->timer.Get();
             // io_thread->vec_latency.push_back(_t);
-            // io_thread->total_time += _t;
+            io_thread->total_time += _t;
         }
         // 判断结束方式
         if (_time_based) {
             if (io_thread->total_time > _run_time) {
                 break;
             }
-            _do_count++;
+            _do_count += _io_depth;
         } else if (i > _do_count) {
             break;
         }
