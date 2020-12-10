@@ -33,6 +33,8 @@ void do_parse_parameters(int argc, char** argv)
         } else if (sscanf(argv[i], "--time=%llu%c", &n, &junk) == 1) {
             g_options.time_based = true;
             g_options.time = n;
+        } else if (sscanf(argv[i], "--block_size=%llu%c", &n, &junk) == 1) {
+            g_options.block_size = n;
         } else if (sscanf(argv[i], "--num_write_thread=%llu%c", &n, &junk) == 1) {
             g_options.num_write_thread = n;
         } else if (sscanf(argv[i], "--num_read_thread=%llu%c", &n, &junk) == 1) {
