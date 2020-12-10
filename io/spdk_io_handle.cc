@@ -206,6 +206,7 @@ do_seq_write: // 顺序写开始
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
             _io_ctx[j]->timer.Start();
+            printf("%d %d\n", _pos / 512, j);
             _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, (void*)_io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
