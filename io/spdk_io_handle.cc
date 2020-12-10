@@ -193,7 +193,7 @@ do_seq_read: // 顺序读开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
-            // io_thread->vec_latency.push_back(_t);
+            io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
         // 判断结束方式
@@ -270,7 +270,7 @@ do_random_read: // 随机读开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
-            // io_thread->vec_latency.push_back(_t);
+            io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
         // 判断结束方式
@@ -307,7 +307,7 @@ do_random_write: // 随机写开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
-            // io_thread->vec_latency.push_back(_t);
+            io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
         }
         // 判断结束方式
