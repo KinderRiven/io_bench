@@ -85,6 +85,7 @@ int main(int argc, char** argv)
             io_bench::IO_Options _warm_opt = g_options;
             _warm_opt.num_write_thread += _warm_opt.num_read_thread;
             _warm_opt.num_read_thread = 0;
+            _warm_opt.block_size = 4096;
             _warm_opt.write_type = io_bench::IO_SEQ; // warmup的时候开多线程进行顺序写
             // io_bench::IOHandle* _warmup_io_handle = new io_bench::PosixIOHandle(&_warm_opt);
             io_bench::IOHandle* _warmup_io_handle = new io_bench::SpdkIOHandle(&_warm_opt);
