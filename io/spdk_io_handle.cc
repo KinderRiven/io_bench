@@ -52,6 +52,14 @@ public:
 
     // IOPS
     double iops;
+
+public:
+    io_thread_t()
+        : device(nullptr)
+        , io_qpair(nullptr)
+    {
+        vec_latency.clear();
+    }
 };
 
 static bool probe_cb(void* cb_ctx, const struct spdk_nvme_transport_id* trid, struct spdk_nvme_ctrlr_opts* opts)
