@@ -364,7 +364,7 @@ SpdkIOHandle::~SpdkIOHandle()
 
 void SpdkIOHandle::Run()
 {
-    io_thread_t io_threads_[64];
+    io_thread_t* io_threads_[64];
     std::thread threads_[64];
 
     int _thread_id = 0;
@@ -373,55 +373,57 @@ void SpdkIOHandle::Run()
 
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         // 传参
-        io_threads_[_thread_id].thread_id = _thread_id;
-        io_threads_[_thread_id].device = &device_;
-        io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
-        io_threads_[_thread_id].io_depth = 8;
-        io_threads_[_thread_id].rw = 1;
-        io_threads_[_thread_id].io_type = options_->write_type;
-        io_threads_[_thread_id].io_space_start = _per_thread_io_space_size * _thread_id;
-        io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
-        io_threads_[_thread_id].io_total_size = _per_thread_io_size;
-        io_threads_[_thread_id].io_block_size = options_->block_size;
+        io_threads_[_thread_id] = new io_thread_t();
+        io_threads_[_thread_id]->thread_id = _thread_id;
+        io_threads_[_thread_id]->device = &device_;
+        io_threads_[_thread_id]->io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
+        io_threads_[_thread_id]->io_depth = 8;
+        io_threads_[_thread_id]->rw = 1;
+        io_threads_[_thread_id]->io_type = options_->write_type;
+        io_threads_[_thread_id]->io_space_start = _per_thread_io_space_size * _thread_id;
+        io_threads_[_thread_id]->io_space_size = _per_thread_io_space_size;
+        io_threads_[_thread_id]->io_total_size = _per_thread_io_size;
+        io_threads_[_thread_id]->io_block_size = options_->block_size;
         // Time based
         if (options_->time_based) {
-            io_threads_[_thread_id].time_based = true;
-            io_threads_[_thread_id].time = options_->time;
+            io_threads_[_thread_id]->time_based = true;
+            io_threads_[_thread_id]->time = options_->time;
         }
         // 创建负载
         if (options_->workload_type == WORKLOAD_DBBENCH) {
-            io_threads_[_thread_id].workload = new DBBenchWorkload(1000 + _thread_id);
+            io_threads_[_thread_id]->workload = new DBBenchWorkload(1000 + _thread_id);
         } else if (options_->workload_type == WORKLOAD_YCSB) {
-            io_threads_[_thread_id].workload = new YCSBWorkload();
+            io_threads_[_thread_id]->workload = new YCSBWorkload();
         }
         // 创建线程
-        threads_[_thread_id] = std::thread(run_io_thread, &io_threads_[_thread_id]);
+        threads_[_thread_id] = std::thread(run_io_thread, io_threads_[_thread_id]);
     }
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         // 传参
-        io_threads_[_thread_id].thread_id = _thread_id;
-        io_threads_[_thread_id].device = &device_;
-        io_threads_[_thread_id].io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
-        io_threads_[_thread_id].io_depth = 8;
-        io_threads_[_thread_id].rw = 0;
-        io_threads_[_thread_id].io_type = options_->read_type;
-        io_threads_[_thread_id].io_space_start = _per_thread_io_space_size * _thread_id;
-        io_threads_[_thread_id].io_space_size = _per_thread_io_space_size;
-        io_threads_[_thread_id].io_total_size = _per_thread_io_size;
-        io_threads_[_thread_id].io_block_size = options_->block_size;
+        io_threads_[_thread_id] = new io_thread_t();
+        io_threads_[_thread_id]->thread_id = _thread_id;
+        io_threads_[_thread_id]->device = &device_;
+        io_threads_[_thread_id]->io_qpair = spdk_nvme_ctrlr_alloc_io_qpair(device_.ctrlr, nullptr, 0);
+        io_threads_[_thread_id]->io_depth = 8;
+        io_threads_[_thread_id]->rw = 0;
+        io_threads_[_thread_id]->io_type = options_->read_type;
+        io_threads_[_thread_id]->io_space_start = _per_thread_io_space_size * _thread_id;
+        io_threads_[_thread_id]->io_space_size = _per_thread_io_space_size;
+        io_threads_[_thread_id]->io_total_size = _per_thread_io_size;
+        io_threads_[_thread_id]->io_block_size = options_->block_size;
         // Time based
         if (options_->time_based) {
-            io_threads_[_thread_id].time_based = true;
-            io_threads_[_thread_id].time = options_->time;
+            io_threads_[_thread_id]->time_based = true;
+            io_threads_[_thread_id]->time = options_->time;
         }
         // 创建负载
         if (options_->workload_type == WORKLOAD_DBBENCH) {
-            io_threads_[_thread_id].workload = new DBBenchWorkload(1000 + _thread_id);
+            io_threads_[_thread_id]->workload = new DBBenchWorkload(1000 + _thread_id);
         } else if (options_->workload_type == WORKLOAD_YCSB) {
-            io_threads_[_thread_id].workload = new YCSBWorkload();
+            io_threads_[_thread_id]->workload = new YCSBWorkload();
         }
         // 创建线程
-        threads_[_thread_id] = std::thread(run_io_thread, &io_threads_[_thread_id]);
+        threads_[_thread_id] = std::thread(run_io_thread, io_threads_[_thread_id]);
     }
 
     _thread_id = 0;
