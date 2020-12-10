@@ -429,11 +429,11 @@ void SpdkIOHandle::Run()
     _thread_id = 0;
     for (int i = 0; i < options_->num_write_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
-        spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
+        spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id]->io_qpair);
     }
     for (int i = 0; i < options_->num_read_thread; i++, _thread_id++) {
         threads_[_thread_id].join();
-        spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id].io_qpair);
+        spdk_nvme_ctrlr_free_io_qpair(io_threads_[_thread_id]->io_qpair);
     }
     printf("Everything is finished!\n");
 }
