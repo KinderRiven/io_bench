@@ -152,6 +152,8 @@ static void run_io_thread(io_thread_t* io_thread)
         io_thread->thread_id, io_thread->time, _io_start / (1024 * 1024), _io_end / (1024 * 1024), _space_count,
         _io_block_size, _io_total_size / (1024 * 1024), _do_count, _io_depth);
 
+    _total_timer.Start();
+
     if (io_thread->rw == 1) {
         if (io_thread->io_type == IO_SEQ) {
             goto do_seq_write;
@@ -166,7 +168,6 @@ static void run_io_thread(io_thread_t* io_thread)
         }
     }
 
-    _total_timer.Start();
 do_seq_read: // 顺序读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
