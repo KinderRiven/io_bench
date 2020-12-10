@@ -42,7 +42,7 @@ public:
 
 public:
     // 记录每个请求的延迟
-    std::vector<uint64_t> vec_latency;
+    // std::vector<uint64_t> vec_latency;
 
     // 所有的请求延迟和
     uint64_t total_time;
@@ -112,7 +112,6 @@ static void read_cb(void* context, const struct spdk_nvme_cpl* cpl)
 static void write_cb(void* context, const struct spdk_nvme_cpl* cpl)
 {
     assert(spdk_nvme_cpl_is_success(cpl) == true);
-    printf("write callback!\n");
     io_context_t* _ctx = (io_context_t*)context;
     _ctx->timer.Stop();
 }
@@ -120,6 +119,7 @@ static void write_cb(void* context, const struct spdk_nvme_cpl* cpl)
 static void run_io_thread(io_thread_t* io_thread)
 {
     int _res;
+    Timer _total_timer;
     bool _time_based = io_thread->time_based;
     uint64_t _run_time = (uint64_t)io_thread->time * 1000000000UL;
 
@@ -167,6 +167,7 @@ static void run_io_thread(io_thread_t* io_thread)
         }
     }
 
+    _total_timer.Start();
 do_seq_read: // 顺序读开始
     printf("[thread:%02d][do_seq_read]\n", io_thread->thread_id);
     for (int i = 0;; i++) {
@@ -214,7 +215,6 @@ do_seq_write: // 顺序写开始
         // 提交SQ
         for (int j = 0; j < _io_depth; j++) {
             _io_ctx[j]->timer.Start();
-            printf("%d %d\n", _pos / 512, j);
             _res = spdk_nvme_ns_cmd_write(_device->ns, _io_qpair, (void*)_io_ctx[j]->buff, _pos / 512, _io_block_size / 512, write_cb, (void*)_io_ctx[j], 0);
             assert(_res == 0);
             _pos += _io_block_size;
@@ -232,13 +232,9 @@ do_seq_write: // 顺序写开始
         }
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
-            printf("%d_timer\n", j);
             uint64_t _t = _io_ctx[j]->timer.Get();
-            printf("%d_vector\n", j);
-            io_thread->vec_latency.push_back(_t);
-            printf("%d_total\n", j);
+            // io_thread->vec_latency.push_back(_t);
             io_thread->total_time += _t;
-            printf("%d_end\n", j);
         }
         // 判断结束方式
         if (_time_based) {
@@ -327,13 +323,15 @@ do_random_write: // 随机写开始
     goto end; // 随机写结束
 
 end:
+    _total_timer.Stop();
+    double _total_run_time = 1.0 * _total_timer.Get() / 1000000000UL;
     for (int i = 0; i < _io_depth; i++) {
         delete _io_ctx[i];
     }
     io_thread->avg_time = 1.0 * io_thread->total_time / _do_count;
     io_thread->iops = 1000000000.0 / io_thread->avg_time;
-    printf("[thread:%02d][count:%llu][total_time:%.2fseconds][avg_time:%.2fus][iops:%.2f]\n",
-        io_thread->thread_id, _do_count, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000, io_thread->iops);
+    printf("[thread:%02d][count:%llu][run_time:%.2fseconds][total_time:%.2fseconds][avg_time:%.2fus][iops:%.2f]\n",
+        io_thread->thread_id, _do_count, _total_run_time, 1.0 * io_thread->total_time / (1000000000UL), io_thread->avg_time / 1000, io_thread->iops);
     return;
 }
 
