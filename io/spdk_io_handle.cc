@@ -233,7 +233,7 @@ do_seq_write: // 顺序写开始
         // 保存结果
         for (int j = 0; j < _io_depth; j++) {
             uint64_t _t = _io_ctx[j]->timer.Get();
-            if (_t > 1000) {
+            if ((_t / 1000) > 1000) {
                 printf("%llu\n", _t);
             }
             // io_thread->vec_latency.push_back(_t);
