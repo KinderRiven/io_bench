@@ -5,17 +5,17 @@ ioengine=libaio
 iodepth=8
 fallocate=1 
 
-runtime=3600  
+runtime=60
 time_based
 
-log_avg_msec=5000
+log_avg_msec=1000
 write_bw_log=mlog   
 write_iops_log=mlog
 write_lat_log=mlog 
 
 [write_job]
 rw=randwrite  
-# random_distribution=zipf:1.2
+random_distribution=zipf:1.2
 size=40GB
 filesize=40GB 
 fill_device=false
