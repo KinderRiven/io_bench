@@ -15,7 +15,7 @@ write_bw_log=mlog
 write_iops_log=mlog
 write_lat_log=mlog 
 
-[write_job]
+[job1]
 rw=randwrite  
 random_distribution=zipf:1.2
 size=80GB
@@ -23,7 +23,7 @@ filesize=80GB
 bs=4KB
 nrfiles=1
 
-[write_job]
+[job2]
 rw=randwrite  
 random_distribution=zipf:1.2
 size=80GB
@@ -31,7 +31,7 @@ filesize=80GB
 bs=4KB
 nrfiles=1
 
-[write_job]
+[job3]
 rw=randwrite  
 random_distribution=zipf:1.2
 size=80GB
@@ -39,7 +39,7 @@ filesize=80GB
 bs=4KB
 nrfiles=1
 
-[write_job]
+[job4]
 rw=randwrite  
 random_distribution=zipf:1.2
 size=80GB
