@@ -1,19 +1,19 @@
 [global]
-filename=/home/hanshukai/mount/4800/test // 指定文件名称和创建的位置
-direct=1 // 写入是否开启DIRECT_IO的方式
-ioengine=libaio // io方式
-iodepth=8 // io_depth，如果采用了libaio这种批量提交的IO接口，则可以指定io_depth选择一次提交的io request数量
+filename=/home/hanshukai/mount/4800/test 
+direct=1
+ioengine=libaio
+iodepth=8
 
-log_avg_msec=5000 // 平均多久记录一次log
-write_bw_log=mlog   // 带宽日志记录位置
-write_iops_log=mlog // IOPS记录位置
-write_lat_log=mlog  // 延迟记录位置
+log_avg_msec=5000
+write_bw_log=mlog  
+write_iops_log=mlog
+write_lat_log=mlog 
 
-runtime=3600  // 运行多久，需要搭配time_based使用，说明本次运行是基于时间运行的，而不是基于size
+runtime=3600  
 time_based
 
 [write_job]
-rw=randwrite    // 读写方式
-size=40GB   // 如果没有指定runtime就是运行
-numjobs=8   // 其多少个jobs,这里如果写8，就是8个job每个都创建一个40GB的文件进行读写，所以一共需要的空间为320GB
-bs=4KB  //读写粒度
+rw=randwrite  
+size=40GB  
+numjobs=1  
+bs=4KB 
