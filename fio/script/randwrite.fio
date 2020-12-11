@@ -1,5 +1,6 @@
 [global]
-filename=/home/hanshukai/mount/4800/test
+# filename=/home/hanshukai/mount/4800/test
+directory=/home/hanshukai/mount/4800
 fallocate=1
 thread
 
@@ -15,7 +16,8 @@ write_bw_log=mlog
 write_iops_log=mlog
 write_lat_log=mlog 
 
-[job1]
+[wjobs]
+numjobs=4
 rw=randwrite  
 random_distribution=zipf:1.2
 size=80GB
@@ -23,26 +25,3 @@ filesize=80GB
 bs=4KB
 nrfiles=1
 
-[job2]
-rw=randwrite  
-random_distribution=zipf:1.2
-size=80GB
-filesize=80GB 
-bs=4KB
-nrfiles=1
-
-[job3]
-rw=randwrite  
-random_distribution=zipf:1.2
-size=80GB
-filesize=80GB 
-bs=4KB
-nrfiles=1
-
-[job4]
-rw=randwrite  
-random_distribution=zipf:1.2
-size=80GB
-filesize=80GB 
-bs=4KB
-nrfiles=1
