@@ -1,21 +1,24 @@
 [global]
-filename=/home/hanshukai/mount/4800/test 
-direct=1
-ioengine=libaio
+filename=/home/hanshukai/mount/4800/test
+direct=1 
+ioengine=libaio 
 iodepth=8
+fallocate=1 
+
+runtime=3600  
+time_based
 
 log_avg_msec=5000
-write_bw_log=mlog  
+write_bw_log=mlog   
 write_iops_log=mlog
 write_lat_log=mlog 
-latency-log
-bandwidth-log
-
-runtime=60  
-time_based
 
 [write_job]
 rw=randwrite  
+# random_distribution=zipf:1.2
 size=40GB
-numjobs=1  
+filesize=40GB 
+fill_device=false
+numjobs=8
 bs=4KB 
+nrfiles=1
