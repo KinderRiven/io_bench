@@ -9,11 +9,11 @@ write_bw_log=mlog
 write_iops_log=mlog
 write_lat_log=mlog 
 
-runtime=3600  
+runtime=60  
 time_based
 
 [write_job]
 rw=randwrite  
-size=40GB  
+size=40GB
 numjobs=1  
 bs=4KB 
