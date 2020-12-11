@@ -19,7 +19,7 @@ write_lat_log=mlog
 [wjobs]
 numjobs=4
 rw=randwrite  
-random_distribution=uniform
+random_distribution=random
 size=80GB
 filesize=80GB
 bs=4KB
