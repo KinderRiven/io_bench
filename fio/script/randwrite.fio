@@ -8,7 +8,7 @@ direct=1
 ioengine=libaio 
 iodepth=8
 
-runtime=60
+runtime=3600
 time_based
 
 log_avg_msec=5000
@@ -19,9 +19,9 @@ write_lat_log=mlog
 [wjobs]
 numjobs=4
 rw=randwrite  
-random_distribution=zipf:1.2
+random_distribution=uniform
 size=80GB
-filesize=80GB 
+filesize=80GB
 bs=4KB
 nrfiles=1
 
