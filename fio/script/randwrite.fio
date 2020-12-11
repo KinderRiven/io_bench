@@ -1,18 +1,43 @@
 [global]
 filename=/home/hanshukai/mount/4800/test
+fallocate=1
+thread
+
 direct=1 
 ioengine=libaio 
 iodepth=8
-numjobs=4
-fallocate=1 
 
-runtime=3600
+runtime=60
 time_based
 
 log_avg_msec=5000
 write_bw_log=mlog   
 write_iops_log=mlog
 write_lat_log=mlog 
+
+[write_job]
+rw=randwrite  
+random_distribution=zipf:1.2
+size=80GB
+filesize=80GB 
+bs=4KB
+nrfiles=1
+
+[write_job]
+rw=randwrite  
+random_distribution=zipf:1.2
+size=80GB
+filesize=80GB 
+bs=4KB
+nrfiles=1
+
+[write_job]
+rw=randwrite  
+random_distribution=zipf:1.2
+size=80GB
+filesize=80GB 
+bs=4KB
+nrfiles=1
 
 [write_job]
 rw=randwrite  
