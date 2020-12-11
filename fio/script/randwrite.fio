@@ -19,6 +19,6 @@ random_distribution=zipf:1.2
 size=40GB
 filesize=40GB 
 fill_device=0
-numjobs=8
+numjobs=1
 bs=4KB 
 nrfiles=1
