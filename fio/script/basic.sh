@@ -1,7 +1,7 @@
-rw=('write' 'randwrite' 'read' 'randread')
+rw=('write') # 'randwrite' 'read' 'randread')
 num_rw=${#rw[@]}
 
-bs=('512B' '1KB' '4KB' '16KB' '64KB')
+bs=('512B') # '1KB' '4KB' '16KB' '64KB')
 num_bs=${#bs[@]}
 
 directory='/home/hanshukai/mount/4800'
