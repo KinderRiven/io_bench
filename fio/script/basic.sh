@@ -22,7 +22,7 @@ filesize=80GB
 
 nrfiles=1
 
-time=$(date +%s%3)
+time=$(date +%s)
 
 mkdir $time
 
