@@ -35,8 +35,9 @@ _rw=${rw[$j]}
 _dir=$time/${_bs}_${_rw}_${iodepth}_${numjobs}
 echo $_dir
 mkdir $_dir
+_log=${_dir}/log
 _shell="-rw=${_rw} -bs=${_bs} -fallocate=1 -thread -directory=${directory} -ioengine=${ioengine} -iodepth=${iodepth} -time_based -log_avg_msec=${log_avg_msec}\
- -write_bw_log=log write_iops_log=log -write_lat_log=log -numjobs=${numjobs} -random_distribution=${random_distribution} -filesize=${filesize} -nrfiles=${nrfiles}"
+ -write_bw_log=${_log} -write_iops_log=${_log} -write_lat_log=${_log} -numjobs=${numjobs} -random_distribution=${random_distribution} -filesize=${filesize} -nrfiles=${nrfiles}"
 echo $_shell
 fio $_shell
 done
