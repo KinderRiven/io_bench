@@ -38,7 +38,7 @@ mkdir $_dir
 _log=${_dir}/log
 _shell="-name=wjob -rw=${_rw} -bs=${_bs} -fallocate=1 -thread -directory=${directory} -ioengine=${ioengine} -iodepth=${iodepth} -time_based -log_avg_msec=${log_avg_msec}\
  -write_bw_log=${_log} -write_iops_log=${_log} -write_lat_log=${_log} -numjobs=${numjobs} \
- -random_distribution=${random_distribution} -filesize=${filesize} -nrfiles=${nrfiles} > ${_dir}/result.txt"
+ -random_distribution=${random_distribution} -filesize=${filesize} -nrfiles=${nrfiles} --output=${_dir}/result.txt"
 echo $_shell
 fio $_shell
 done
