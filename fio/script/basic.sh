@@ -10,7 +10,7 @@ ioengine=libaio
 
 iodepth=8
 
-runtime=10
+runtime=3600
 
 log_avg_msec=5000
 
