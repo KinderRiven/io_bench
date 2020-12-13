@@ -5,7 +5,7 @@ num_rw=${#rw[@]}
 bs=('1KB' '4KB' '16KB')
 num_bs=${#bs[@]}
 
-iodepth=(1 2 4 8 16 32)
+iodepth=(1 4 16 32)
 num_iodepth=${#iodepth[@]}
 
 numjobs=(1 2 4 8)
@@ -15,9 +15,9 @@ directory='/home/hanshukai/mount/4800'
 
 ioengine=libaio 
 
-runtime=3600
+runtime=600
 
-log_avg_msec=5000
+log_avg_msec=1000
 
 random_distribution=random
 
