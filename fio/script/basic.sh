@@ -2,7 +2,7 @@ rw=('write' 'randwrite' 'read' 'randread')
 num_rw=${#rw[@]}
 
 # bs=('512B' '1KB' '4KB' '16KB' '64KB')
-bs=('4KB' '16KB')
+bs=('1KB' '4KB' '16KB')
 num_bs=${#bs[@]}
 
 iodepth=(1 2 4 8 16 32)
@@ -45,7 +45,7 @@ _dir=$time/${_bs}_${_rw}_${_numjobs}_${_iodepth}
 echo $_dir
 mkdir $_dir
 _log=${_dir}/log
-_shell="-name=wjob -rw=${_rw} -bs=${_bs} -fallocate=1 -thread -directory=${directory} -ioengine=${ioengine} -iodepth=${_iodepth} -time_based --runtime=${runtime} -log_avg_msec=${log_avg_msec}\
+_shell="-name=wjob -rw=${_rw} -direct=1 -bs=${_bs} -fallocate=1 -thread -directory=${directory} -ioengine=${ioengine} -iodepth=${_iodepth} -time_based --runtime=${runtime} -log_avg_msec=${log_avg_msec}\
  -write_bw_log=${_log} -write_iops_log=${_log} -write_lat_log=${_log} -numjobs=${_numjobs} \
  -random_distribution=${random_distribution} -filesize=${filesize} -nrfiles=${nrfiles} --output=${_dir}/result.txt"
 echo $_shell
