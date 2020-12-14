@@ -21,7 +21,8 @@ log_avg_msec=1000
 
 random_distribution=random
 
-filesize=80GB
+# GB
+filesize=80
 
 nrfiles=1
 
@@ -38,18 +39,19 @@ _rw=${rw[$j]}
 for ((k=0; k<${num_numjobs}; k++))
 do
 _numjobs=${numjobs[$k]}
+_filesize='expr $filesize / $_numjobs'
 for ((l=0; l<${num_iodepth}; l++))
 do
 _iodepth=${iodepth[$l]}
 _dir=$time/${_bs}_${_rw}_${_numjobs}_${_iodepth}
 echo $_dir
-mkdir $_dir
+# mkdir $_dir
 _log=${_dir}/log
 _shell="-name=wjob -rw=${_rw} -direct=1 -bs=${_bs} -fallocate=1 -thread -directory=${directory} -ioengine=${ioengine} -iodepth=${_iodepth} -time_based --runtime=${runtime} -log_avg_msec=${log_avg_msec}\
  -write_bw_log=${_log} -write_iops_log=${_log} -write_lat_log=${_log} -numjobs=${_numjobs} \
- -random_distribution=${random_distribution} -filesize=${filesize} -nrfiles=${nrfiles} --output=${_dir}/result.txt"
+ -random_distribution=${random_distribution} -filesize=${_filesize} -nrfiles=${nrfiles} --output=${_dir}/result.txt"
 echo $_shell
-fio $_shell
+# fio $_shell
 done
 done
 done
