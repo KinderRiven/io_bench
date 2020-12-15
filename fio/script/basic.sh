@@ -30,16 +30,17 @@ time=$(date +%s)
 
 mkdir $time
 
-for ((i=0; i<${num_bs}; i+=1))
-do
-_bs=${bs[$i]}
-for ((j=0; j<${num_rw}; j+=1))
-do
-_rw=${rw[$j]}
 for ((k=0; k<${num_numjobs}; k++))
 do
 _numjobs=${numjobs[$k]}
 _filesize=`expr $disksize / $_numjobs`
+rm -rf $directory/*
+for ((j=0; j<${num_rw}; j+=1))
+do
+_rw=${rw[$j]}
+for ((i=0; i<${num_bs}; i+=1))
+do
+_bs=${bs[$i]}
 for ((l=0; l<${num_iodepth}; l++))
 do
 _iodepth=${iodepth[$l]}
