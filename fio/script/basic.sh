@@ -22,7 +22,7 @@ log_avg_msec=1000
 random_distribution=random
 
 # GB
-filesize=80
+disksize=320
 
 nrfiles=1
 
@@ -39,7 +39,7 @@ _rw=${rw[$j]}
 for ((k=0; k<${num_numjobs}; k++))
 do
 _numjobs=${numjobs[$k]}
-_filesize=`expr $filesize / $_numjobs`
+_filesize=`expr $disksize / $_numjobs`
 for ((l=0; l<${num_iodepth}; l++))
 do
 _iodepth=${iodepth[$l]}
