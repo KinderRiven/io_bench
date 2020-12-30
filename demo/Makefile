@@ -1,4 +1,4 @@
-all: clean mmap
+all: clean mmap rw
 
 clean:
 	rm -rf mmap
