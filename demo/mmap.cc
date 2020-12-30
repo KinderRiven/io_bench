@@ -53,13 +53,13 @@ int main(int argc, char** argv)
     _timer.Start();
     do_read(_base, _size, _block_size);
     _timer.Stop();
-    printf("read time:%.2fus\n", 1.0 * _timer.Get() / 1000000);
+    printf("read time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
 
     scanf("%d", &_scan);
     _timer.Start();
     do_write(_base, _size, _block_size);
     _timer.Stop();
-    printf("write time:%.2fus\n", 1.0 * _timer.Get() / 1000000);
+    printf("write time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
 
     close(_fd);
     return 0;
