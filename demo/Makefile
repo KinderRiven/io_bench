@@ -1,7 +1,7 @@
 all: clean mmap rw
 
 clean:
-	rm -rf mmap
+	rm -rf mmap rw
 
 mmap:
 	g++ -O0 mmap.cc -o mmap

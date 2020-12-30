@@ -48,18 +48,19 @@ int main(int argc, char** argv)
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     assert(_fd > 0);
 
-    scanf("%d", &_scan);
+#if 1
     _timer.Start();
     do_read(_fd, _size, _block_size);
     _timer.Stop();
     printf("read time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
+#endif
 
-    scanf("%d", &_scan);
+#if 1
     _timer.Start();
     do_write(_fd, _size, _block_size);
     _timer.Stop();
     printf("write time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
-
+#endif
     close(_fd);
     return 0;
 }
