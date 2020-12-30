@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     printf("[%s][size:%zu][bs:%zu]\n", _name, _size, _block_size);
 
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
-    void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE | MAP_NONBLOCK, _fd, 0);
+    void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, _fd, 0);
 
 #if 1
     _timer.Start();
