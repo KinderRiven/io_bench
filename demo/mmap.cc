@@ -31,6 +31,7 @@ void do_write(void* addr, size_t size, size_t block_size)
 
     for (int i = 0; i < _cnt; i++) {
         memcpy(_dest, _src, block_size);
+        msync(_dest, block_size, MS_SYNC);
         _dest += block_size;
     }
 }
