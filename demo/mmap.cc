@@ -50,7 +50,6 @@ int main(int argc, char** argv)
     void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED, _fd, 0);
 
 #if 1
-    scanf("%d", &_scan);
     _timer.Start();
     do_read(_base, _size, _block_size);
     _timer.Stop();
@@ -58,7 +57,6 @@ int main(int argc, char** argv)
 #endif
 
 #if 0
-    scanf("%d", &_scan);
     _timer.Start();
     do_write(_base, _size, _block_size);
     _timer.Stop();
