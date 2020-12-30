@@ -40,21 +40,23 @@ void do_write(void* addr, size_t size, size_t block_size)
 int main(int argc, char** argv)
 {
     Timer _timer;
-    char _name[128];
-    size_t _size;
     int _scan;
+    char* _name = argv[1];
+    size_t _size = atol(argv[2]);
+    size_t _block_size = atol(argv[3]);
+
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED, _fd, 0);
 
     scanf("%d", &_scan);
     _timer.Start();
-    do_write(_base, _size, 4096);
+    do_write(_base, _size, _block_size);
     _timer.Stop();
     printf("time:%.2fus\n", 1.0 * _timer.Get() / 1000000);
 
     scanf("%d", &_scan);
     _timer.Start();
-    do_read(_base, _size, 4096);
+    do_read(_base, _size, _block_size);
     _timer.Stop();
     printf("time:%.2fus\n", 1.0 * _timer.Get() / 1000000);
 
