@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 
     printf("[%s][size:%zu][bs:%zu][addr:0x%llx]\n", _name, _size, _block_size, (uint64_t)_base);
 
-#if 0
+#if 1
     _timer.Start();
     do_read(_base, _size, _block_size);
     _timer.Stop();
