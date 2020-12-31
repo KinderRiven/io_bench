@@ -83,7 +83,7 @@ int main(int argc, char** argv)
     printf("memset...\n");
     memset(_base1, 0xff, _size);
     printf("mmap...\n");
-    void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+    void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED | MAP_POPULATE, _fd, 0);
     printf("[base1:0x%llx][base:0x%llx]\n", (uint64_t)_base1, (uint64_t)_base);
 #endif
 #endif
