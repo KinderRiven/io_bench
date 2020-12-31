@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     void* _base1;
     posix_memalign(&_base1, 4096, _size);
     void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
-    printf("[base1:0x%llu][base:0x%llx]\n", (uint64_t)_base1, (uint64_t)_base);
+    printf("[base1:0x%llx][base:0x%llx]\n", (uint64_t)_base1, (uint64_t)_base);
 #endif
 #endif
 
