@@ -80,13 +80,13 @@ int main(int argc, char** argv)
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     void* _base1;
     posix_memalign(&_base1, 4096, _size);
+    memset(_base1, 0xff, _size);
     void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
     printf("[base1:0x%llx][base:0x%llx]\n", (uint64_t)_base1, (uint64_t)_base);
 #endif
 #endif
 
     printf("[%s][size:%zu][bs:%zu][addr:0x%llx]\n", _name, _size, _block_size, (uint64_t)_base);
-
 #if 1
     _timer.Start();
     do_read(_base, _size, _block_size);
