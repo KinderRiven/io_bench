@@ -44,10 +44,14 @@ int main(int argc, char** argv)
     size_t _size = atol(argv[2]) * 1024 * 1024;
     size_t _block_size = atol(argv[3]);
 
-    printf("[%s][size:%zu][bs:%zu]\n", _name, _size, _block_size);
-
+#if 0
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, _fd, 0);
+#else
+    void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+#endif
+
+    printf("[%s][size:%zu][bs:%zu][addr:0x%llx]\n", _name, _size, _block_size, (uint64_t)_base);
 
 #if 1
     _timer.Start();
