@@ -1,6 +1,8 @@
 #include "header.h"
 #include "timer.h"
 
+// #define USE_MAP_FILE
+
 void do_read(void* addr, size_t size, size_t block_size)
 {
     void* _buff = nullptr;
@@ -44,7 +46,7 @@ int main(int argc, char** argv)
     size_t _size = atol(argv[2]) * 1024 * 1024;
     size_t _block_size = atol(argv[3]);
 
-#if 0
+#ifdef USE_MAP_FILE
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, _fd, 0);
 #else
@@ -53,7 +55,7 @@ int main(int argc, char** argv)
 
     printf("[%s][size:%zu][bs:%zu][addr:0x%llx]\n", _name, _size, _block_size, (uint64_t)_base);
 
-#if 1
+#if 0
     _timer.Start();
     do_read(_base, _size, _block_size);
     _timer.Stop();
@@ -66,6 +68,9 @@ int main(int argc, char** argv)
     _timer.Stop();
     printf("write time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
 #endif
+
+#ifdef USE_MAP_FILE
     close(_fd);
+#endif
     return 0;
 }
