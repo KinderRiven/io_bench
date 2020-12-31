@@ -50,22 +50,38 @@ int main(int argc, char** argv)
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, _fd, 0);
 #else
-#if 0
- void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-#endif
-#if 0
- void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-#endif
 // case 1
-#if 0
-    // int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
-    // void* _base1 = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    // void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+#if 1
+    void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    printf("[base:0x%llx]\n", (uint64_t)_base);
 #endif
-    // case 2
+// case 2
+#if 1
+    void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    printf("[base:0x%llx]\n", (uint64_t)_base);
+#endif
+// case 3
+// OK
 #if 1
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
-    void* _base = mmap((void *)0x7fdfa8e2b000, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+    void* _base1 = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+    printf("[base1:0x%llu][base:0x%llx]\n", (uint64_t)_base1, (uint64_t)_base);
+#endif
+// case 4
+// OK
+#if 1
+    int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
+    void* _base = mmap((void*)0x7fdfa8e2b000, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+    printf("[base:0x%llx]\n", (uint64_t)_base);
+#endif
+// case 5
+#if 1
+    int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
+    void* _base1;
+    posix_memalign(&_base1, 4096, _size);
+    void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+    printf("[base1:0x%llu][base:0x%llx]\n", (uint64_t)_base1, (uint64_t)_base);
 #endif
 #endif
 
