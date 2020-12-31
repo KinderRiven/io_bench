@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, _fd, 0);
 #else
-    void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+    void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 #endif
 
     printf("[%s][size:%zu][bs:%zu][addr:0x%llx]\n", _name, _size, _block_size, (uint64_t)_base);
