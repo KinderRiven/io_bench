@@ -50,11 +50,23 @@ int main(int argc, char** argv)
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
     void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, _fd, 0);
 #else
-    // void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    // void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+#if 0
+ void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+#endif
+#if 0
+ void* _base = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+#endif
+// case 1
+#if 0
+    // int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
+    // void* _base1 = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    // void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+#endif
+    // case 2
+#if 1
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
-    void* _base1 = mmap(nullptr, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+    void* _base = mmap((uint64_t)0x7fdfa5e2b000, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, _fd, 0);
+#endif
 #endif
 
     printf("[%s][size:%zu][bs:%zu][addr:0x%llx]\n", _name, _size, _block_size, (uint64_t)_base);
