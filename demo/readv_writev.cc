@@ -16,13 +16,7 @@ void do_readv(int fd, size_t size, size_t block_size)
         _iovec[i].iov_len = block_size;
     }
 
-    char* _dest = (char*)_buff;
-    uint64_t _pos = 0;
-
     for (int i = 0; i < _cnt; i++) {
-        for (int j = 0; j < PER_IO; j++) {
-            _pos += block_size;
-        }
         readv(fd, &_iovec[0], PER_IO);
     }
 }
@@ -40,13 +34,7 @@ void do_writev(int fd, size_t size, size_t block_size)
         _iovec[i].iov_len = block_size;
     }
 
-    uint64_t _pos = 0;
-    char* _src = (char*)_buff;
-
     for (int i = 0; i < _cnt; i++) {
-        for (int j = 0; j < PER_IO; j++) {
-            _pos += block_size;
-        }
         writev(fd, &_iovec[0], PER_IO);
     }
 }
