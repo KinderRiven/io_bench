@@ -23,7 +23,7 @@ void do_readv(int fd, size_t size, size_t block_size)
         for (int j = 0; j < PER_IO; j++) {
             _pos += block_size;
         }
-        writev(fd, &_iovec[0], PER_IO);
+        readv(fd, &_iovec[0], PER_IO);
     }
 }
 
