@@ -6,7 +6,7 @@ void do_flock(int fd)
     int _res;
     _res = flock(fd, LOCK_EX);
     printf("%d\n", _res);
-    _res = flock(Fd, LOCK_UN);
+    _res = flock(fd, LOCK_UN);
     printf("%d\n", _res);
 }
 
