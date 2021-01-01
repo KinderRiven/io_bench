@@ -13,4 +13,4 @@ rwv:
 	g++ -O0 readv_writev.cc -o rwv
 
 aio:
-	g++ -00 libaio.cc -o aio
+	g++ -O0 libaio.cc -o aio
