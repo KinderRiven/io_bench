@@ -39,7 +39,7 @@ static int io_getevents(aio_context_t ctx, long min_nr, long max_nr,
     return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);
 }
 
-void do_seqwrite(int fd, size_t block_size, size_t total_size)
+void do_aio_write(int fd, size_t total_size, size_t block_size)
 {
     int ret;
     void* vbuff;
@@ -76,7 +76,7 @@ void do_seqwrite(int fd, size_t block_size, size_t total_size)
     free(vbuff);
 }
 
-void do_seqread(int fd, size_t block_size, size_t total_size)
+void do_aio_read(int fd, size_t total_size, size_t block_size)
 {
     int ret;
     void* vbuff;
@@ -112,104 +112,33 @@ void do_seqread(int fd, size_t block_size, size_t total_size)
     free(vbuff);
 }
 
-void do_randwrite(int fd, size_t block_size, size_t total_size)
-{
-}
-
-void do_randread(int fd, size_t block_size, size_t total_size)
-{
-}
-
-void* run_benchmark(void* options)
-{
-    struct thread_options* opt = (struct thread_options*)options;
-    int fd;
-    char file_name[32];
-    sprintf(file_name, "%s/%d.io", opt->path, opt->thread_id);
-
-    cpu_set_t mask;
-    CPU_ZERO(&mask);
-    CPU_SET(opt->thread_id, &mask);
-    if (pthread_setaffinity_np(pthread_self(), sizeof(mask), &mask) < 0) {
-        printf("threadpool, set thread affinity failed.\n");
-    }
-    fd = open(file_name, O_RDWR | O_DIRECT, 0777);
-
-    Timer timer;
-    timer.Start();
-    switch (opt->type) {
-    case DO_RW:
-        do_randwrite(fd, opt->block_size, opt->total_size);
-        break;
-    case DO_SW:
-        do_seqwrite(fd, opt->block_size, opt->total_size);
-        break;
-    case DO_RR:
-        do_randread(fd, opt->block_size, opt->total_size);
-        break;
-    case DO_SR:
-        do_seqread(fd, opt->block_size, opt->total_size);
-        break;
-    default:
-        printf("error test type!\n");
-        break;
-    }
-    timer.Stop();
-    double seconds = timer.GetSeconds();
-    double latency = 1000000000.0 * seconds / (opt->total_size / opt->block_size);
-    double iops = 1000000000.0 / latency;
-    printf("[%d][TIME:%.2f][IOPS:%.2f]\n", opt->thread_id, seconds, iops);
-    opt->iops = iops;
-    close(fd);
-    return nullptr;
-}
-
 // #define USE_FALLOCATE
 int main(int argc, char** argv)
 {
-    if (argc < 7) {
-        printf("./libaio [rw] [io_path] [num_thread] [io_depth] [block_size(B)] [total_size(MB)]\n");
-        printf("for example: ./libaio 2 /home/hanshukai/p3700_dir1 1 1 4096 2048\n");
-        exit(1);
-    }
+    Timer _timer;
+    int _scan;
+    char* _name = argv[1];
+    size_t _size = atol(argv[2]) * 1024 * 1024;
+    size_t _block_size = atol(argv[3]);
 
-    pthread_t thread_id[32];
-    struct thread_options options[32];
-    int type = atol(argv[1]);
-    // argv[2] is test path
-    int num_thread = atol(argv[3]);
-    io_depth = atol(argv[4]);
-    size_t block_size = atol(argv[5]); // B
-    size_t total_size = atol(argv[6]); // MB
-    total_size *= (1024 * 1024);
+    printf("[%s][size:%zu][bs:%zu]\n", _name, _size, _block_size);
 
-    for (int i = 0; i < num_thread; i++) {
-        int fd;
-        char file_name[32];
-        sprintf(file_name, "%s/%d.io", argv[2], i);
-        fd = open(file_name, O_RDWR | O_CREAT, 0777);
-        fallocate(fd, 0, 0, total_size);
-        close(fd);
-    }
+    int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
+    assert(_fd > 0);
 
-    for (int i = 0; i < num_thread; i++) {
-        options[i].type = type;
-        strcpy(options[i].path, argv[2]);
-        options[i].thread_id = i;
-        options[i].block_size = block_size;
-        options[i].total_size = total_size;
-        printf("[%02d] pthread create new thread.\n", i);
-        pthread_create(thread_id + i, nullptr, run_benchmark, (void*)&options[i]);
-    }
+#if 1
+    _timer.Start();
+    do_aio_read(_fd, _size, _block_size);
+    _timer.Stop();
+    printf("read time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
+#endif
 
-    for (int i = 0; i < num_thread; i++) {
-        pthread_join(thread_id[i], nullptr);
-    }
-
-    double sum_iops = 0;
-    for (int i = 0; i < num_thread; i++) {
-        sum_iops += options[i].iops;
-    }
-    printf("[SUM][[TYPE:%d]IO_DEPTH:%d][IOPS:%.2f][BW:%.2fMB/s]\n", type, sum_iops, io_depth, sum_iops * block_size / (1024 * 1024));
+#if 0
+    _timer.Start();
+    do_aio_write(_fd, _size, _block_size);
+    _timer.Stop();
+    printf("write time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
+#endif
+    close(_fd);
     return 0;
 }
