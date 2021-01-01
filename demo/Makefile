@@ -1,7 +1,7 @@
-all: clean mmap rw rwv aio
+all: clean mmap rw rwv aio lock
 
 clean:
-	rm -rf mmap rw rwv aio
+	rm -rf mmap rw rwv aio lock
 
 mmap:
 	g++ -O0 mmap.cc -o mmap
@@ -14,3 +14,6 @@ rwv:
 
 aio:
 	g++ -O0 libaio.cc -o aio -lpthread -laio
+
+lock:
+	g++ -O0 flock.cc -o lock
