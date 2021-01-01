@@ -30,7 +30,7 @@ void do_write(int fd, size_t size, size_t block_size)
     char* _src = (char*)_buff;
 
     for (int i = 0; i < _cnt; i++) {
-        write(fd, _src, block_size, _pos);
+        write(fd, _src, block_size);
         // _pos += block_size;
     }
 }
