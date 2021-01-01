@@ -13,8 +13,8 @@ void do_read(int fd, size_t size, size_t block_size)
     uint64_t _pos = 0;
 
     for (int i = 0; i < _cnt; i++) {
-        pread(fd, _dest, block_size, _pos);
-        _pos += block_size;
+        read(fd, _dest, block_size);
+        // _pos += block_size;
     }
 }
 
@@ -30,8 +30,8 @@ void do_write(int fd, size_t size, size_t block_size)
     char* _src = (char*)_buff;
 
     for (int i = 0; i < _cnt; i++) {
-        pwrite(fd, _src, block_size, _pos);
-        _pos += block_size;
+        write(fd, _src, block_size, _pos);
+        // _pos += block_size;
     }
 }
 
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     printf("read time:%.2fseconds\n", 1.0 * _timer.Get() / 1000000000);
 #endif
 
-#if 1
+#if 0
     _timer.Start();
     do_write(_fd, _size, _block_size);
     _timer.Stop();
