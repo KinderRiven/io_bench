@@ -1,7 +1,7 @@
-all: clean mmap rw rwv
+all: clean mmap rw rwv aio
 
 clean:
-	rm -rf mmap rw rwv
+	rm -rf mmap rw rwv aio
 
 mmap:
 	g++ -O0 mmap.cc -o mmap
@@ -11,3 +11,6 @@ rw:
 
 rwv:
 	g++ -O0 readv_writev.cc -o rwv
+
+aio:
+	g++ -00 libaio.cc -o aio
