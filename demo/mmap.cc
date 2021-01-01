@@ -76,12 +76,15 @@ int main(int argc, char** argv)
     printf("[base:0x%llx]\n", (uint64_t)_base);
 #endif
 // case 5
+// OK
 #if 1
     int _fd = open(_name, O_RDWR | O_DIRECT, 0666);
+
     void* _base1;
     posix_memalign(&_base1, 4096, _size);
     printf("memset...\n");
     memset(_base1, 0xff, _size);
+
     printf("mmap...\n");
     void* _base = mmap(_base1, _size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED | MAP_POPULATE, _fd, 0);
     printf("[base1:0x%llx][base:0x%llx]\n", (uint64_t)_base1, (uint64_t)_base);
