@@ -3,8 +3,8 @@
 struct info_t {
 public:
     int finished;
-    int a;
     int b;
+    int a;
     // int c;
     // int d;
     // int e;
