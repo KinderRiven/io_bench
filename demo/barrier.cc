@@ -19,6 +19,8 @@ public:
 static void T1(info_t* info)
 {
     while (1) {
+        while (info->finished == 1) {
+        }
         info->a++;
         info->b++;
         info->c++;
