@@ -12,37 +12,43 @@ public:
 public:
     info_t()
     {
-        // a = b = c = d = e = finished = 0;
         a = b = finished = 0;
     }
 };
 
 static void T1(info_t* info)
 {
+    cpu_set_t _mask;
+    CPU_ZERO(&_mask);
+    CPU_SET(0, &_mask);
+    if (pthread_setaffinity_np(pthread_self(), sizeof(_mask), &_mask) < 0) {
+        printf("threadpool, set thread affinity failed.\n");
+    }
+
     while (1) {
         while (info->finished == 1) {
         }
         info->a++;
         info->b++;
-        // info->c++;
-        // info->d++;
-        // info->e++;
         info->finished = 1;
     }
 }
 
 static void T2(info_t* info)
 {
+    cpu_set_t _mask;
+    CPU_ZERO(&_mask);
+    CPU_SET(1, &_mask);
+    if (pthread_setaffinity_np(pthread_self(), sizeof(_mask), &_mask) < 0) {
+        printf("threadpool, set thread affinity failed.\n");
+    }
+
     while (1) {
         while (info->finished == 0) {
         }
         int _a = info->a;
         int _b = info->b;
-        // int _c = info->c;
-        // int _d = info->d;
-        // int _e = info->e;
         int _f = info->finished;
-        // printf("[%d] %d %d %d %d %d\n", _f, _a, _b, _c, _d, _e);
         if (_a != _b) {
             printf("[%d] %d %d\n", _f, _a, _b);
         }
