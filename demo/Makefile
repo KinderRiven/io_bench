@@ -19,4 +19,4 @@ lock:
 	g++ -O0 flock.cc -o lock
 
 barrier:
-	g++ barrier.cc -o barrier
+	g++ barrier.cc -o barrier -lpthread
