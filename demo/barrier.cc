@@ -2,12 +2,12 @@
 
 struct info_t {
 public:
+    int finished;
     int a;
     int b;
     // int c;
     // int d;
     // int e;
-    int finished;
 
 public:
     info_t()
