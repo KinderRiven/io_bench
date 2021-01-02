@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     std::thread _threads[16];
 
     _threads[0] = std::thread(T1, &_info);
-    _threads[1] = std::thread(T1, &_info);
+    _threads[1] = std::thread(T2, &_info);
 
     _threads[0].join();
     _threads[1].join();
