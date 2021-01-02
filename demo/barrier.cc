@@ -18,25 +18,27 @@ public:
 
 static void T1(info_t* info)
 {
-    info->a = 1;
-    info->b = 2;
-    info->c = 3;
-    info->d = 4;
-    info->e = 5;
-    info->finished = 1;
+    while (1) {
+        info->a++;
+        info->b++;
+        info->c++;
+        info->d++;
+        info->e++;
+        info->finished++;
+    }
 }
 
 static void T2(info_t* info)
 {
-    while (info->finished == 0) {
+    while (1) {
+        int _a = info->a;
+        int _b = info->b;
+        int _c = info->c;
+        int _d = info->d;
+        int _e = info->e;
+        int _f = info->finished;
+        printf("[%d] %d %d %d %d %d\n", _f, _a, _b, _c, _d, _e);
     }
-
-    int _a = info->a;
-    int _b = info->b;
-    int _c = info->c;
-    int _d = info->d;
-    int _e = info->e;
-    printf("%d %d %d %d %d\n", _a, _b, _c, _d, _e);
 }
 
 int main(int argc, char** argv)
