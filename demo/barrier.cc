@@ -43,7 +43,9 @@ static void T2(info_t* info)
         // int _e = info->e;
         int _f = info->finished;
         // printf("[%d] %d %d %d %d %d\n", _f, _a, _b, _c, _d, _e);
-        printf("[%d] %d %d\n", _f, _a, _b);
+        if (_a != _b) {
+            printf("[%d] %d %d\n", _f, _a, _b);
+        }
         info->finished = 0;
     }
 }
