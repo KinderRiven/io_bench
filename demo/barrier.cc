@@ -30,6 +30,10 @@ static void T1(info_t* info)
         }
         info->a++;
         info->b++;
+        info->a++;
+        info->b++;
+        info->a++;
+        info->b++;
         info->finished = 1;
     }
 }
