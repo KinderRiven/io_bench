@@ -1,7 +1,7 @@
-all: clean mmap rw rwv aio lock
+all: clean barrier # mmap rw rwv aio lock
 
 clean:
-	rm -rf mmap rw rwv aio lock
+	rm -rf barrier # mmap rw rwv aio lock
 
 mmap:
 	g++ -O0 mmap.cc -o mmap
@@ -17,3 +17,6 @@ aio:
 
 lock:
 	g++ -O0 flock.cc -o lock
+
+barrier:
+	g++ barrier.cc -o barrier

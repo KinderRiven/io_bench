@@ -11,6 +11,10 @@ void do_flock(int fd)
     printf("%d\n", _res);
 }
 
+void do_fcntl(int fd)
+{
+}
+
 int main(int argc, char** argv)
 {
     Timer _timer;
