@@ -24,13 +24,15 @@ static void T1(info_t* info)
         info->c++;
         info->d++;
         info->e++;
-        info->finished++;
+        info->finished = 1;
     }
 }
 
 static void T2(info_t* info)
 {
     while (1) {
+        while (info->finished == 0) {
+        }
         int _a = info->a;
         int _b = info->b;
         int _c = info->c;
@@ -38,6 +40,7 @@ static void T2(info_t* info)
         int _e = info->e;
         int _f = info->finished;
         printf("[%d] %d %d %d %d %d\n", _f, _a, _b, _c, _d, _e);
+        info->finished = 0;
     }
 }
 
