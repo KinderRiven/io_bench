@@ -74,8 +74,6 @@ public:
         int _status = 0;
         while (!_atomic_flag.compare_exchange_strong(_status, 1, std::memory_order_seq_cst)) {
         }
-        int _c = _atomic_flag;
-        printf("%d %d\n", _c, _status);
 #elif defined(USE_PTHREAD_SPINTLOCK)
         pthread_spin_lock(&_spinlock);
 #elif defined(USE_PTHREAD_RWLOCK)
