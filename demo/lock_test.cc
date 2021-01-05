@@ -34,6 +34,7 @@ public:
         _atomic_flag = 0;
 #elif defined(USE_PTHREAD_SPINTLOCK)
 #elif defined(USE_PTHREAD_RWLOCK)
+        pthread_rwlock_init(&_rwlock, 0);
 #endif
     }
 
