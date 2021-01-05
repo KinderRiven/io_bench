@@ -3,6 +3,7 @@
 struct info_t {
 public:
     uint64_t val;
+    std::mutex _mutex;
 
 public:
     info_t()
@@ -13,10 +14,12 @@ public:
 public:
     void lock()
     {
+        _mutex.lock();
     }
 
     void unlock()
     {
+        _mutex.unlock();
     }
 };
 
