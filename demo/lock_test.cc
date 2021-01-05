@@ -106,7 +106,7 @@ public:
 
 int g_num_thread = 8;
 
-uint64_t g_count = 10000UL;
+uint64_t g_count = 10000000UL;
 
 int g_core[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
 
@@ -126,13 +126,9 @@ static void run_thread(int thread_id, info_t* info)
     _timer->Start();
     for (uint64_t i = 0; i < _cnt; i++) {
         info->lock();
-        for (int j = 0; j < 10000; j++) {
-            info->val += 10;
-            info->val *= 10;
-            info->val -= 10;
-        }
+        info->val += 10;
         info->unlock();
-        NOP10();
+        // NOP10();
     }
     _timer->Stop();
     printf("[thread%02d][time:%lluns/%.2fus/%.2fsec]\n", thread_id, _timer->Get(), 1.0 * _timer->Get() / 1000, 1.0 * _timer->Get() / (1000000000));
