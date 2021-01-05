@@ -1,32 +1,61 @@
 #include "header.h"
 #include <mutex>
+#include <pthread.h>
+
+#define NO_LOCK
+
+// #define USE_MUTEXT_LOCK
+
+// #define USE_ATOMIC_LOCK
+
+#define USE_PTHREAD_SPINTLOCK
 
 struct info_t {
 public:
     uint64_t val;
-    // std::mutex _mutex;
+#ifdef USE_MUTEXT_LOCK
+    std::mutex _mutex;
+#elif defined(USE_ATOMIC_LOCK)
     std::atomic<int> _atomic_flag;
+#elif defined(USE_PTHREAD_SPINTLOCK)
+    pthread_spinlock_t _spinlock;
+#endif
 
 public:
     info_t()
         : val(0)
-        , _atomic_flag(0)
     {
+#ifdef USE_MUTEXT_LOCK
+
+#elif defined(USE_ATOMIC_LOCK)
+        _atomic_flag = 0;
+#elif defined(USE_PTHREAD_SPINTLOCK)
+#endif
     }
 
 public:
     void lock()
     {
-        // _mutex.lock();
+#ifdef USE_MUTEXT_LOCK
+        _mutex.lock();
+#elif defined(USE_ATOMIC_LOCK)
         int _status = 0;
         while (!_atomic_flag.compare_exchange_strong(_status, 1, std::memory_order_acquire)) {
         }
+#elif defined(USE_PTHREAD_SPINTLOCK)
+        pthread_spin_lock(&_spinlock);
+#endif
     }
 
     void unlock()
     {
-        // _mutex.unlock();
+#ifdef USE_MUTEXT_LOCK
+        _mutex.unlock();
+#elif defined(USE_ATOMIC_LOCK)
         _atomic_flag = 0;
+#elif defined(USE_PTHREAD_SPINTLOCK)
+        pthread_spin_unlock(&_spinlock);
+#endif
     }
 };
 
