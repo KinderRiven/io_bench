@@ -106,7 +106,7 @@ public:
 
 int g_num_thread = 8;
 
-uint64_t g_count = 10000000UL;
+uint64_t g_count = 100000UL;
 
 int g_core[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
 
@@ -121,11 +121,14 @@ static void run_thread(int thread_id, info_t* info)
 
     int _cnt = g_count;
     Timer* _timer = &info->_timer[thread_id];
-
     _timer->Start();
     for (uint64_t i = 0; i < _cnt; i++) {
         info->lock();
-        info->val += 10;
+        for (int j = 0; j < 10000; j++) {
+            info->val += 10;
+            info->val *= 10;
+            info->val -= 10;
+        }
         info->unlock();
     }
     _timer->Stop();
