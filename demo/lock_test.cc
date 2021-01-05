@@ -90,7 +90,7 @@ public:
 #ifdef USE_MUTEXT_LOCK
         _mutex.unlock();
 #elif defined(USE_ATOMIC_LOCK)
-        _atomic_flag = 0;
+        _atomic_flag.store(0, std::memory_order_seq_cst);
 #elif defined(USE_PTHREAD_SPINTLOCK)
         pthread_spin_unlock(&_spinlock);
 #elif defined(USE_PTHREAD_RWLOCK)
