@@ -2,6 +2,8 @@
 #include <mutex>
 #include <pthread.h>
 
+#define NUM_THREADS (8)
+
 #define NO_LOCK
 
 // #define USE_MUTEXT_LOCK
@@ -24,6 +26,7 @@ public:
 #elif defined(USE_PTHREAD_RWLOCK)
     pthread_rwlock_t _rwlock;
 #endif
+    Timer _timer[NUM_THREADS];
 
 public:
     info_t()
@@ -85,16 +88,16 @@ static void run_thread(int thread_id, info_t* info)
     }
 
     int _cnt = g_count;
-    Timer _timer;
+    Timer* _timer = &info->_timer[thread_id];
 
-    _timer.Start();
+    _timer->Start();
     for (uint64_t i = 0; i < _cnt; i++) {
         info->lock();
         info->val += 10;
         info->unlock();
     }
-    _timer.Stop();
-    printf("[thread%02d][time:%lluns/%.2fus/%.2fsec]\n", thread_id, _timer.Get(), 1.0 * _timer.Get() / 1000, 1.0 * _timer.Get() / (1000000000));
+    _timer->Stop();
+    printf("[thread%02d][time:%lluns/%.2fus/%.2fsec]\n", thread_id, _timer->Get(), 1.0 * _timer->Get() / 1000, 1.0 * _timer->Get() / (1000000000));
 }
 
 int main(int argc, char** argv)
@@ -104,13 +107,20 @@ int main(int argc, char** argv)
     std::thread _threads[16];
 
     _timer.Start();
-    for (int i = 0; i < g_num_thread; i++) {
+    for (int i = 0; i < NUM_THREADS; i++) {
         _threads[i] = std::thread(run_thread, i, &_info);
     }
-    for (int i = 0; i < g_num_thread; i++) {
+    for (int i = 0; i < NUM_THREADS; i++) {
         _threads[i].join();
     }
     _timer.Stop();
-    printf("[Finished][val:%llu][time:%lluns/%.2fus/%.2fsec]\n", _info.val, _timer.Get(), 1.0 * _timer.Get() / 1000, 1.0 * _timer.Get() / (1000000000));
+
+    uint64_t _total_time = 0;
+    double _avg_time;
+    for (int i = 0; i < NUM_THREADS; i++) {
+        _total_time += _info._timer[i].Get();
+    }
+    _avg_time = _total_time / NUM_THREADS;
+    printf("[Finished][val:%llu][time:%lluns/%.2fus/%.2fsec]\n", _info.val, _avg_time, _avg_time / 1000, _avg_time / (1000000000));
     return 0;
 }
