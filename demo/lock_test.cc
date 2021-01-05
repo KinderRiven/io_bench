@@ -132,6 +132,7 @@ static void run_thread(int thread_id, info_t* info)
             info->val -= 10;
         }
         info->unlock();
+        NOP10();
     }
     _timer->Stop();
     printf("[thread%02d][time:%lluns/%.2fus/%.2fsec]\n", thread_id, _timer->Get(), 1.0 * _timer->Get() / 1000, 1.0 * _timer->Get() / (1000000000));
