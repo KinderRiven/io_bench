@@ -175,6 +175,7 @@ int main(int argc, char** argv)
         _total_time += _info._timer[i].Get();
     }
     _avg_time = 1.0 * _total_time / NUM_THREADS;
-    printf("[Finished][val:%llu][time:%.2fns/%.2fus/%.2fsec]\n", _info.val, _avg_time, _avg_time / 1000, _avg_time / (1000000000));
+    uint64_t _val = _info.val;
+    printf("[Finished][val:%llu][time:%.2fns/%.2fus/%.2fsec]\n", _val, _avg_time, _avg_time / 1000, _avg_time / (1000000000));
     return 0;
 }
