@@ -1,4 +1,6 @@
 #include "header.h"
+#include "tbb/tbb/spin_mutex.h"
+#include "tbb/tbb/spin_rw_mutex.h"
 #include <mutex>
 #include <pthread.h>
 
@@ -10,9 +12,11 @@
 
 // #define USE_ATOMIC_LOCK
 
-#define USE_PTHREAD_SPINTLOCK
+// #define USE_PTHREAD_SPINTLOCK
 
-#define USE_PTHREAD_RWLOCK
+// #define USE_PTHREAD_RWLOCK
+
+#define USE_TBB_MUTEXT_LOCK
 
 struct info_t {
 public:
@@ -25,6 +29,8 @@ public:
     pthread_spinlock_t _spinlock;
 #elif defined(USE_PTHREAD_RWLOCK)
     pthread_rwlock_t _rwlock;
+#elif defined(USE_TBB_MUTEXT_LOCK)
+    tbb::spin_mutex _tbb_mutex;
 #endif
     Timer _timer[NUM_THREADS];
 
@@ -39,6 +45,7 @@ public:
         pthread_spin_init(&_spinlock, PTHREAD_PROCESS_PRIVATE);
 #elif defined(USE_PTHREAD_RWLOCK)
         pthread_rwlock_init(&_rwlock, 0);
+#elif defined(USE_TBB_MUTEXT_LOCK)
 #endif
     }
 
@@ -55,6 +62,8 @@ public:
         pthread_spin_lock(&_spinlock);
 #elif defined(USE_PTHREAD_RWLOCK)
         pthread_rwlock_wrlock(&_rwlock);
+#elif defined(USE_TBB_MUTEXT_LOCK)
+        _tbb_mutex.lock();
 #endif
     }
 
@@ -68,6 +77,8 @@ public:
         pthread_spin_unlock(&_spinlock);
 #elif defined(USE_PTHREAD_RWLOCK)
         pthread_rwlock_unlock(&_rwlock);
+#elif defined(USE_TBB_MUTEXT_LOCK)
+        _tbb_mutex.unlock();
 #endif
     }
 };
