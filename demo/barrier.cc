@@ -24,7 +24,7 @@ static void T1(info_t* info)
     if (pthread_setaffinity_np(pthread_self(), sizeof(_mask), &_mask) < 0) {
         printf("threadpool, set thread affinity failed.\n");
     }
-
+#if 1
     while (1) {
         while (info->finished == 1) {
         }
@@ -36,6 +36,7 @@ static void T1(info_t* info)
         info->b++;
         info->finished = 1;
     }
+#endif
 }
 
 static void T2(info_t* info)
@@ -46,7 +47,7 @@ static void T2(info_t* info)
     if (pthread_setaffinity_np(pthread_self(), sizeof(_mask), &_mask) < 0) {
         printf("threadpool, set thread affinity failed.\n");
     }
-
+#if 1
     while (1) {
         while (info->finished == 0) {
         }
@@ -58,6 +59,7 @@ static void T2(info_t* info)
         }
         info->finished = 0;
     }
+#endif
 }
 
 int main(int argc, char** argv)

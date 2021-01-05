@@ -1,7 +1,10 @@
-all: clean barrier # mmap rw rwv aio lock
+all: clean lock # barrier # mmap rw rwv aio flock
 
 clean:
-	rm -rf barrier # mmap rw rwv aio lock
+	rm -rf lock # barrier # mmap rw rwv aio lock
+
+lock:
+	g++ -O3 lock.cc -o lock
 
 mmap:
 	g++ -O0 mmap.cc -o mmap
@@ -15,8 +18,8 @@ rwv:
 aio:
 	g++ -O0 libaio.cc -o aio -lpthread -laio
 
-lock:
-	g++ -O0 flock.cc -o lock
+flock:
+	g++ -O0 flock.cc -o flock
 
 barrier:
 	g++ -O3 barrier.cc -o barrier -lpthread
