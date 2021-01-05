@@ -76,7 +76,7 @@ int g_num_thread = 8;
 
 uint64_t g_count = 10000000UL;
 
-int g_core[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+int g_core[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
 
 static void run_thread(int thread_id, info_t* info)
 {
