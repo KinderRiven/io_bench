@@ -1,10 +1,10 @@
-all: clean lock # barrier # mmap rw rwv aio flock
+all: clean lock_test # barrier # mmap rw rwv aio flock
 
 clean:
-	rm -rf lock # barrier # mmap rw rwv aio lock
+	rm -rf lock_test # barrier # mmap rw rwv aio lock
 
-lock:
-	g++ -O3 lock.cc -o lock
+lock_test:
+	g++ -O3 lock_test.cc -o lock_test
 
 mmap:
 	g++ -O0 mmap.cc -o mmap
