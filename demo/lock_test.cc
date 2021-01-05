@@ -2,7 +2,7 @@
 
 struct info_t {
 public:
-    int val;
+    uint64_t val;
 
 public:
     info_t()
@@ -22,7 +22,7 @@ public:
 
 int g_num_thread = 8;
 
-int g_count = 1000000;
+uint64_t g_count = 100000000UL;
 
 int g_core[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
@@ -39,9 +39,9 @@ static void run_thread(int thread_id, info_t* info)
     Timer _timer;
 
     _timer.Start();
-    for (int i = 0; i < _cnt; i++) {
+    for (uint64_t i = 0; i < _cnt; i++) {
         info->lock();
-        info->val++;
+        info->val += 10;
         info->unlock();
     }
     _timer.Stop();
@@ -62,6 +62,6 @@ int main(int argc, char** argv)
         _threads[i].join();
     }
     _timer.Stop();
-    printf("[Finished][val:%d][time:%lluns/%.2fus/%.2fsec]\n", _info.val, _timer.Get(), 1.0 * _timer.Get() / 1000, 1.0 * _timer.Get() / (1000000000));
+    printf("[Finished][val:%llu][time:%lluns/%.2fus/%.2fsec]\n", _info.val, _timer.Get(), 1.0 * _timer.Get() / 1000, 1.0 * _timer.Get() / (1000000000));
     return 0;
 }
