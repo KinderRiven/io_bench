@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < NUM_THREADS; i++) {
         _total_time += _info._timer[i].Get();
     }
-    _avg_time = _total_time / NUM_THREADS;
-    printf("[Finished][val:%llu][time:%lluns/%.2fus/%.2fsec]\n", _info.val, _avg_time, _avg_time / 1000, _avg_time / (1000000000));
+    _avg_time = 1.0 * _total_time / NUM_THREADS;
+    printf("[Finished][val:%llu][time:%.2fns/%.2fus/%.2fsec]\n", _info.val, _avg_time, _avg_time / 1000, _avg_time / (1000000000));
     return 0;
 }
