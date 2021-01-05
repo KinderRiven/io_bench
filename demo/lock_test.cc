@@ -106,7 +106,7 @@ public:
 
 int g_num_thread = 8;
 
-uint64_t g_count = 1000UL;
+uint64_t g_count = 10000UL;
 
 int g_core[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
 
