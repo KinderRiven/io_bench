@@ -6,9 +6,9 @@
 
 #define NUM_THREADS (8)
 
-#define NO_LOCK
+#define ATOMIC_ADD
 
-#define USE_MUTEXT_LOCK
+// #define USE_MUTEXT_LOCK
 
 // #define USE_ATOMIC_LOCK
 
@@ -33,7 +33,12 @@ typedef enum memory_order {
 
 struct info_t {
 public:
+#ifdef ATOMIC_ADD
+    std::atomic<uint64_t> val;
+#else
     uint64_t val;
+#endif
+
 #ifdef USE_MUTEXT_LOCK
     std::mutex _mutex;
 #elif defined(USE_ATOMIC_LOCK)
@@ -54,14 +59,22 @@ public:
         : val(0)
     {
 #ifdef USE_MUTEXT_LOCK
+        printf("std_mutext test\n");
 #elif defined(USE_ATOMIC_LOCK)
         _atomic_flag.store(0);
+        printf("atomic lock test\n");
 #elif defined(USE_PTHREAD_SPINTLOCK)
         pthread_spin_init(&_spinlock, PTHREAD_PROCESS_PRIVATE);
+        printf("pthread_spinlock test\n");
 #elif defined(USE_PTHREAD_RWLOCK)
         pthread_rwlock_init(&_rwlock, 0);
+        printf("pthread_rwlock test\n");
 #elif defined(USE_TBB_MUTEXT_LOCK)
+        printf("tbb_mutext test\n");
 #elif defined(USE_TBB_RWLOCK)
+        printf("tbb_rwlock test\n");
+#elif defined(ATOMIC_ADD)
+        printf("atomic add\n");
 #endif
     }
 
@@ -83,6 +96,7 @@ public:
         _tbb_mutex.lock();
 #elif defined(USE_TBB_RWLOCK)
         _tbb_rwlock.lock();
+#elif defined(ATOMIC_ADD)
 #endif
     }
 
@@ -100,7 +114,13 @@ public:
         _tbb_mutex.unlock();
 #elif defined(USE_TBB_RWLOCK)
         _tbb_rwlock.unlock();
+#elif defined(ATOMIC_ADD)
 #endif
+    }
+
+    void add10()
+    {
+        val += 10;
     }
 };
 
@@ -126,7 +146,7 @@ static void run_thread(int thread_id, info_t* info)
     _timer->Start();
     for (uint64_t i = 0; i < _cnt; i++) {
         info->lock();
-        info->val += 10;
+        info->add10();
         info->unlock();
         // NOP10();
     }
