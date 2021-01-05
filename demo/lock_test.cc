@@ -45,7 +45,7 @@ static void run_thread(int thread_id, info_t* info)
         info->unlock();
     }
     _timer.Stop();
-    printf("[thread%02d][time:%lluns/%.2fus/%.2fsec]\n", _timer.Get(), 1.0 * _timer.Get() / 1000, 1.0 * _timer.Get() / (1000000000));
+    printf("[thread%02d][time:%lluns/%.2fus/%.2fsec]\n", thread_id, _timer.Get(), 1.0 * _timer.Get() / 1000, 1.0 * _timer.Get() / (1000000000));
 }
 
 int main(int argc, char** argv)
