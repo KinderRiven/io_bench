@@ -4,23 +4,29 @@
 struct info_t {
 public:
     uint64_t val;
-    std::mutex _mutex;
+    // std::mutex _mutex;
+    std::atomic<int> _atomic_flag;
 
 public:
     info_t()
         : val(0)
+        , _atomic_flag(0)
     {
     }
 
 public:
     void lock()
     {
-        _mutex.lock();
+        // _mutex.lock();
+        int _status = 0;
+        while (!_atomic_flag.compare_exchange_strong(_status, 1, std::memory_order_acquire)) {
+        }
     }
 
     void unlock()
     {
-        _mutex.unlock();
+        // _mutex.unlock();
+        _atomic_flag = 0;
     }
 };
 
