@@ -21,7 +21,6 @@ public:
     std::atomic<int> _atomic_flag;
 #elif defined(USE_PTHREAD_SPINTLOCK)
     pthread_spinlock_t _spinlock;
-
 #elif defined(USE_PTHREAD_RWLOCK)
     pthread_rwlock_t _rwlock;
 #endif
@@ -31,10 +30,10 @@ public:
         : val(0)
     {
 #ifdef USE_MUTEXT_LOCK
-
 #elif defined(USE_ATOMIC_LOCK)
         _atomic_flag = 0;
 #elif defined(USE_PTHREAD_SPINTLOCK)
+#elif defined(USE_PTHREAD_RWLOCK)
 #endif
     }
 
