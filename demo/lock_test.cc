@@ -16,7 +16,9 @@
 
 // #define USE_PTHREAD_RWLOCK
 
-#define USE_TBB_MUTEXT_LOCK
+// #define USE_TBB_MUTEXT_LOCK
+
+#define USE_TBB_RWLOCK
 
 struct info_t {
 public:
@@ -31,6 +33,8 @@ public:
     pthread_rwlock_t _rwlock;
 #elif defined(USE_TBB_MUTEXT_LOCK)
     tbb::spin_mutex _tbb_mutex;
+#elif defined(USE_TBB_RWLOCK)
+    tbb::spin_rw_mutex _tbb_rwlock;
 #endif
     Timer _timer[NUM_THREADS];
 
@@ -46,6 +50,7 @@ public:
 #elif defined(USE_PTHREAD_RWLOCK)
         pthread_rwlock_init(&_rwlock, 0);
 #elif defined(USE_TBB_MUTEXT_LOCK)
+#elif defined(USE_TBB_RWLOCK)
 #endif
     }
 
@@ -64,6 +69,8 @@ public:
         pthread_rwlock_wrlock(&_rwlock);
 #elif defined(USE_TBB_MUTEXT_LOCK)
         _tbb_mutex.lock();
+#elif defined(USE_TBB_RWLOCK)
+        _tbb_rwlock.lock();
 #endif
     }
 
@@ -79,6 +86,8 @@ public:
         pthread_rwlock_unlock(&_rwlock);
 #elif defined(USE_TBB_MUTEXT_LOCK)
         _tbb_mutex.unlock();
+#elif defined(USE_TBB_RWLOCK)
+        _tbb_rwlock.unlock();
 #endif
     }
 };
