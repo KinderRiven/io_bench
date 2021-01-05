@@ -8,7 +8,7 @@
 
 // #define USE_ATOMIC_LOCK
 
-// #define USE_PTHREAD_SPINTLOCK
+#define USE_PTHREAD_SPINTLOCK
 
 #define USE_PTHREAD_RWLOCK
 
@@ -33,6 +33,7 @@ public:
 #elif defined(USE_ATOMIC_LOCK)
         _atomic_flag = 0;
 #elif defined(USE_PTHREAD_SPINTLOCK)
+        pthread_spin_init(_spinlock, PTHREAD_PROCESS_PRIVATE);
 #elif defined(USE_PTHREAD_RWLOCK)
         pthread_rwlock_init(&_rwlock, 0);
 #endif
