@@ -55,7 +55,7 @@ public:
     {
 #ifdef USE_MUTEXT_LOCK
 #elif defined(USE_ATOMIC_LOCK)
-        _atomic_flag = 0;
+        _atomic_flag.store(0);
 #elif defined(USE_PTHREAD_SPINTLOCK)
         pthread_spin_init(&_spinlock, PTHREAD_PROCESS_PRIVATE);
 #elif defined(USE_PTHREAD_RWLOCK)
@@ -73,6 +73,7 @@ public:
 #elif defined(USE_ATOMIC_LOCK)
         int _status = 0;
         while (!_atomic_flag.compare_exchange_strong(_status, 1)) {
+            _status = 0;
         }
 #elif defined(USE_PTHREAD_SPINTLOCK)
         pthread_spin_lock(&_spinlock);
