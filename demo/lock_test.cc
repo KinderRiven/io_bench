@@ -72,7 +72,7 @@ public:
         _mutex.lock();
 #elif defined(USE_ATOMIC_LOCK)
         int _status = 0;
-        while (!_atomic_flag.compare_exchange_strong(_status, 1, std::memory_order_seq_cst)) {
+        while (!_atomic_flag.compare_exchange_strong(_status, 1)) {
         }
 #elif defined(USE_PTHREAD_SPINTLOCK)
         pthread_spin_lock(&_spinlock);
@@ -90,7 +90,7 @@ public:
 #ifdef USE_MUTEXT_LOCK
         _mutex.unlock();
 #elif defined(USE_ATOMIC_LOCK)
-        _atomic_flag.store(0, std::memory_order_seq_cst);
+        _atomic_flag.store(0);
 #elif defined(USE_PTHREAD_SPINTLOCK)
         pthread_spin_unlock(&_spinlock);
 #elif defined(USE_PTHREAD_RWLOCK)
