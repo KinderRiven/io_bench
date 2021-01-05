@@ -1,8 +1,8 @@
 #define __USE_GNU 1
+#include "header.h"
 #include <aio.h>
 #include <errno.h>
 #include <fcntl.h>
-#include "header.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,9 +20,9 @@ int main(int argc, char* argv[])
     int fd;
     int io_size = atoi(argv[1]);
     printf("%d\n", io_size);
-    char buffer[BUFFER_SIZE];
-    // char *buffer;
-    // posix_memalign((void *)&buffer, BUFFER_SIZE, BUFFER_SIZE);
+    // char buffer[BUFFER_SIZE];
+    void* buffer;
+    posix_memalign(&buffer, BUFFER_SIZE, BUFFER_SIZE);
     memset(buffer, 'c', BUFFER_SIZE);
     fd = open("test_write", O_RDWR | O_DIRECT, 0666);
     for (i = 0; i < io_size * 256; i++) {
