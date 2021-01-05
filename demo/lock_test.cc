@@ -8,7 +8,7 @@
 
 #define NO_LOCK
 
-// #define USE_MUTEXT_LOCK
+#define USE_MUTEXT_LOCK
 
 // #define USE_ATOMIC_LOCK
 
@@ -18,7 +18,7 @@
 
 // #define USE_TBB_MUTEXT_LOCK
 
-#define USE_TBB_RWLOCK
+// #define USE_TBB_RWLOCK
 
 /*
 typedef enum memory_order {
