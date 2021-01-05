@@ -4,7 +4,7 @@ clean:
 	rm -rf lock_test # barrier # mmap rw rwv aio lock
 
 lock_test:
-	g++ -O3 lock_test.cc -o lock_test -lpthread
+	g++ -O0 lock_test.cc -o lock_test -lpthread
 
 mmap:
 	g++ -O0 mmap.cc -o mmap
