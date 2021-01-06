@@ -171,6 +171,10 @@ int main(int argc, char** argv)
     }
     _timer.Stop();
 
+    double _lat = 1.0 * _timer.Get() / (g_num_thread * g_count);
+    double _iops = 1000000000.0 / _lat;
+    printf("[Finished][IOPS:%.2f]\n", _iops);
+
     uint64_t _total_time = 0;
     double _avg_time;
     for (int i = 0; i < g_num_thread; i++) {
