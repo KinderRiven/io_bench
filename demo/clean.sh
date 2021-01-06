@@ -2,5 +2,5 @@
 
 for ((i=2;i<16;i+=2))
 do
-    perf stat ./lock_test $i > $i
+    ./lock_test $i > $i
 done
