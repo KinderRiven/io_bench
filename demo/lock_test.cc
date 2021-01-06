@@ -4,11 +4,11 @@
 #include <mutex>
 #include <pthread.h>
 
-#define NUM_THREADS (8)
+#define NUM_THREADS (32)
 
-#define ATOMIC_ADD
+// #define ATOMIC_ADD
 
-// #define USE_MUTEXT_LOCK
+#define USE_MUTEXT_LOCK
 
 // #define USE_ATOMIC_LOCK
 
@@ -124,7 +124,7 @@ public:
     }
 };
 
-int g_num_thread = 8;
+int g_num_thread = 2;
 
 uint64_t g_count = 10000000UL;
 
@@ -160,21 +160,23 @@ int main(int argc, char** argv)
     info_t _info;
     std::thread _threads[16];
 
+    g_num_thread = atol(argv[1]);
+
     _timer.Start();
-    for (int i = 0; i < NUM_THREADS; i++) {
+    for (int i = 0; i < g_num_thread; i++) {
         _threads[i] = std::thread(run_thread, i, &_info);
     }
-    for (int i = 0; i < NUM_THREADS; i++) {
+    for (int i = 0; i < g_num_thread; i++) {
         _threads[i].join();
     }
     _timer.Stop();
 
     uint64_t _total_time = 0;
     double _avg_time;
-    for (int i = 0; i < NUM_THREADS; i++) {
+    for (int i = 0; i < g_num_thread; i++) {
         _total_time += _info._timer[i].Get();
     }
-    _avg_time = 1.0 * _total_time / NUM_THREADS;
+    _avg_time = 1.0 * _total_time / g_num_thread;
     uint64_t _val = _info.val;
     printf("[Finished][val:%llu][time:%.2fns/%.2fus/%.2fsec]\n", _val, _avg_time, _avg_time / 1000, _avg_time / (1000000000));
     return 0;
